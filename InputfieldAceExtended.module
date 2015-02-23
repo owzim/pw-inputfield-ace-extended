@@ -1,0 +1,597 @@
+<?php
+
+class InputfieldAceExtended extends InputfieldTextarea {
+
+    /**
+     * A map of all modes from http://ace.c9.io/build/kitchen-sink.html
+     * Some `modes` do not have corresponding label, they will be converted
+     * into `sentence case`
+     *
+     * @var array
+     */
+    static $modes = array(
+        'abap' => 'ABAP',
+        'actionscript' => 'ActionScript',
+        'ada' => 'ADA',
+        'apache_conf' => 'Apache Conf',
+        'asciidoc' => 'AsciiDoc',
+        'assembly_x86' => 'Assembly x86',
+        'autohotkey' => 'AutoHotKey',
+        'batchfile' => 'BatchFile',
+        'c9search' => 'C9Search',
+        'c_cpp' => 'C and C++',
+        'cirru' => 'Cirru',
+        'clojure' => 'Clojure',
+        'cobol' => 'Cobol',
+        'coffee' => 'CoffeeScript',
+        'coldfusion' => 'ColdFusion',
+        'csharp' => 'C#',
+        'css' => 'CSS',
+        'curly' => 'Curly',
+        'd' => 'D',
+        'dart' => 'Dart',
+        'diff' => 'Diff',
+        'dockerfile' => 'Dockerfile',
+        'dot' => 'Dot',
+        'dummy' => 'Dummy',
+        'dummysyntax' => 'DummySyntax',
+        'eiffel' => 'Eiffel',
+        'ejs' => 'EJS',
+        'elixir' => 'Elixir',
+        'elm' => 'Elm',
+        'erlang' => 'Erlang',
+        'forth' => 'Forth',
+        'ftl' => 'FreeMarker',
+        'gcode' => 'Gcode',
+        'gherkin' => 'Gherkin',
+        'gitignore' => 'Gitignore',
+        'glsl' => 'Glsl',
+        'golang' => 'Go',
+        'groovy' => 'Groovy',
+        'haml' => 'HAML',
+        'handlebars' => 'Handlebars',
+        'haskell' => 'Haskell',
+        'haxe' => 'haXe',
+        'html' => 'HTML',
+        'html_ruby' => 'HTML (Ruby)',
+        'ini' => 'INI',
+        'io' => 'Io',
+        'jack' => 'Jack',
+        'jade' => 'Jade',
+        'java' => 'Java',
+        'javascript' => 'JavaScript',
+        'json' => 'JSON',
+        'jsoniq' => 'JSONiq',
+        'jsp' => 'JSP',
+        'jsx' => 'JSX',
+        'julia' => 'Julia',
+        'latex' => 'LaTeX',
+        'less' => 'LESS',
+        'liquid' => 'Liquid',
+        'lisp' => 'Lisp',
+        'livescript' => 'LiveScript',
+        'logiql' => 'LogiQL',
+        'lsl' => 'LSL',
+        'lua' => 'Lua',
+        'luapage' => 'LuaPage',
+        'lucene' => 'Lucene',
+        'makefile' => 'Makefile',
+        'markdown' => 'Markdown',
+        'mask' => 'Mask',
+        'matlab' => 'MATLAB',
+        'mel' => 'MEL',
+        'mushcode' => 'MUSHCode',
+        'mysql' => 'MySQL',
+        'nix' => 'Nix',
+        'objectivec' => 'Objective-C',
+        'ocaml' => 'OCaml',
+        'pascal' => 'Pascal',
+        'perl' => 'Perl',
+        'pgsql' => 'pgSQL',
+        'php' => 'PHP',
+        'powershell' => 'Powershell',
+        'praat' => 'Praat',
+        'prolog' => 'Prolog',
+        'properties' => 'Properties',
+        'protobuf' => 'Protobuf',
+        'python' => 'Python',
+        'r' => 'R',
+        'rdoc' => 'RDoc',
+        'rhtml' => 'RHTML',
+        'ruby' => 'Ruby',
+        'rust' => 'Rust',
+        'sass' => 'SASS',
+        'scad' => 'SCAD',
+        'scala' => 'Scala',
+        'scheme' => 'Scheme',
+        'scss' => 'SCSS',
+        'sh' => 'SH',
+        'sjs' => 'SJS',
+        'smarty' => 'Smarty',
+        'snippets' => 'snippets',
+        'soy_template' => 'Soy Template',
+        'space' => 'Space',
+        'sql' => 'SQL',
+        'stylus' => 'Stylus',
+        'svg' => 'SVG',
+        'tcl' => 'Tcl',
+        'tex' => 'Tex',
+        'text' => 'Text',
+        'textile' => 'Textile',
+        'toml' => 'Toml',
+        'twig' => 'Twig',
+        'typescript' => 'Typescript',
+        'vala' => 'Vala',
+        'vbscript' => 'VBScript',
+        'velocity' => 'Velocity',
+        'verilog' => 'Verilog',
+        'vhdl' => 'VHDL',
+        'xml' => 'XML',
+        'xquery' => 'XQuery',
+        'yaml' => 'YAML',
+    );
+
+    /**
+     * The url to the module's directory
+     *
+     * @var null
+     *
+     * @see  init()
+     */
+    protected $url = null;
+
+    /**
+     * The url to the module's css directory
+     *
+     * @var null
+     *
+     * @see  init()
+     */
+    protected $cssUrl = null;
+
+    /**
+     * The url to the module's js directory
+     *
+     * @var null
+     *
+     * @see  init()
+     */
+    protected $jsUrl = null;
+
+    /**
+     * default config
+     * @return array
+     *
+     * @see  getValue()
+     */
+    public static function getDefaultConfig()
+    {
+        return array(
+            'theme'         => 'tomorrow',
+            'mode'          => 'plain_text',
+            'fontSize'      => 16,
+            'fontFamily'    => 'Monaco, Menlo, "Ubuntu Mono", Consolas, "source-code-pro", monospace',
+            'keybinding'    => 'ace',
+            'showGutter'    => true,
+            'scrollPastEnd' => true,
+            'softTab'       => true,
+
+            'themes' => array(
+                'tomorrow',
+
+                'chrome',
+                'monokai',
+                'twilight',
+            ),
+
+            'modes' => array(
+                'plain_text',
+
+                'css',
+                'html',
+                'javascript',
+                'json',
+                'markdown',
+                'php',
+                'yaml',
+            ),
+
+            'keybindings' => array(
+                'ace' => 'Ace',
+                'vim' => 'Vim',
+                'emacs' => 'Emacs',
+            ),
+
+            'optionsCollapsed' => Inputfield::collapsedYes,
+        );
+    }
+
+    /**
+     * getModuleInfo
+     * @return array
+     */
+    public static function getModuleInfo()
+    {
+        return array(
+            'title'    => 'Inputfield ACE Extended',
+            'version'  => '0.1.0',
+            'author'   => 'owzim',
+            'icon'     => 'code',
+            'href'     => 'https://github.com/owzim/pw-inputfield-ace-extended',
+            'autoload' => false,
+            // PW 2.5.5 for new module/form configs
+            'requires' => array('PHP>=5.4','ProcessWire>=2.5.5'),
+        );
+    }
+
+    /**
+     * initialize the parent module, register the class autoloader, and add a hook
+     */
+    public function init()
+    {
+        parent::init();
+
+        $this->url = rtrim($this->config->urls->InputfieldAceExtended, '/');
+        $this->path = rtrim($this->config->paths->InputfieldAceExtended, '/');
+        $this->cssUrl = "{$this->url}/styles";
+        $this->jsUrl = "{$this->url}/scripts";
+        $this->aceUrl = "{$this->url}/scripts/ace-min";
+        $this->acePath = "{$this->path}/scripts/ace-min";
+
+    }
+
+    /**
+     * ___render
+     * @return string The rendered Inputfield
+     */
+    public function ___render()
+    {
+
+        $field = $this->fields->get($this->name);
+
+        $defaultConfig = self::getDefaultConfig();
+
+        // populate the js config with all the field settings
+        $js = array();
+        foreach ($defaultConfig as $name => $value) {
+            $js[$name] = $this->getValue($field, $name);
+        }
+        $js['rows'] = $field->rows;
+        $this->js($field->name, $js);
+
+
+        $this->config->styles->add("{$this->cssUrl}/ace.css");
+        $this->config->scripts->add("{$this->aceUrl}/ace.js");
+        $this->config->scripts->add("{$this->aceUrl}/ext-themelist.js");
+        $this->config->scripts->add("{$this->jsUrl}/ace-extended.js");
+
+        $options = $this->getOptionsBar($field);
+
+        $textarea = parent::___render();
+        $editor = "<div id='{$this->className}_{$this->name}-editor' class='ace-editor'></div>";
+
+        return "<div data-input-class='$this->className' data-field-name='{$this->name}'>{$options}{$editor}{$textarea}</div>";
+    }
+
+    /**
+     * get the options bar field set, which will be displayed on top of the input
+     * field itself
+     *
+     * @param  Field  $field the actual Ace field
+     * @return InputfieldWrapper
+     */
+    public function getOptionsBar(Field $field)
+    {
+
+        $optionsWrapper = new InputfieldWrapper();
+        $markup = new InputfieldMarkup();
+        $markup->label = $this->_('Options');
+        $markup->name = 'optionsMenu';
+        $markup->icon = 'cog';
+
+        $theme = $this->getThemeOptions($field);
+        $mode = $this->getModeOptions($field);
+
+        $fontSize = $this->modules->get('InputfieldInteger');
+        $fontSize->name = 'ace-fontSize';
+        $fontSize->min = 10;
+        $fontSize->max = 28;
+        $fontSize->inputType = 'number';
+        $fontSize = $this->getOption($this->_('Font size'), $fontSize);
+
+
+        $markup->value = "{$theme}{$mode}{$fontSize}";
+        $markup->collapsed = $this->getValue($field, 'optionsCollapsed');
+
+        $optionsWrapper->append($markup);
+
+        return $optionsWrapper->render();
+    }
+
+    /**
+     * get the select input for selecting the theme
+     *
+     * @param  Field  $field the actual Ace field
+     * @return InputfieldSelect
+     *
+     * @see getOptionsBar
+     */
+    public function getThemeOptions(Field $field)
+    {
+        $options = $this->modules->get('InputfieldSelect');
+        $options->name = 'ace-theme';
+        $options->required = true;
+
+
+        $selectedThemes = (array) $this->getValue($field, 'themes');
+        $allThemes = $this->getThemes();
+
+        if (count($selectedThemes)) {
+            foreach ($selectedThemes as $name) {
+                $options->addOption($name, $allThemes[$name]);
+            }
+        } else {
+            $options->addOptions($allThemes);
+        }
+
+        return $this->getOption('Theme', $options);
+    }
+
+    /**
+     * Scan the ace folder for themes and return an assoc array
+     * @return array
+     */
+    public function getThemes()
+    {
+        $themes = array();
+        $files = scandir($this->acePath);
+        foreach ($files as $file) {
+            if (preg_match("/^theme\-.*\.js$/", $file)) {
+                $optionsName = preg_replace("/^(theme\-)(.*)(\.js)$/", '$2', $file);
+                $themes[$optionsName] = self::name2Label($optionsName);
+            }
+        }
+        return $themes;
+    }
+
+    /**
+     * get the select input for selecting the programming language
+     *
+     * @param  Field  $field the actual Ace field
+     * @return InputfieldSelect
+     *
+     * @see getOptionsBar
+     */
+    public function getModeOptions(Field $field)
+    {
+        $options = $this->modules->get('InputfieldSelect');
+        $options->name = 'ace-mode';
+        $options->required = true;
+
+        $selectedModes = (array) $this->getValue($field, 'modes');
+        $allModes = $this->getModes();
+
+        if (count($selectedModes)) {
+            foreach ($selectedModes as $name) {
+                $options->addOption($name, $allModes[$name]);
+            }
+        } else {
+            $options->addOptions($allModes);
+        }
+
+        return $this->getOption('Language', $options);
+    }
+
+    /**
+     * getModes
+     *
+     * @return array
+     */
+    public function getModes()
+    {
+        $modes = array();
+        $files = scandir($this->acePath);
+        foreach ($files as $file) {
+            if (preg_match("/^mode\-.*\.js$/", $file)) {
+                $optionsName = preg_replace("/^(mode\-)(.*)(\.js)$/", '$2', $file);
+
+                if (array_key_exists($optionsName, self::$modes)) {
+                    $label = self::$modes[$optionsName];
+                } else {
+                    $label = self::name2Label($optionsName);
+                }
+
+                $modes[$optionsName] = $label;
+            }
+        }
+        return $modes;
+    }
+
+    /**
+     * get an option (select, radio etc) wrapped in html elements, so that
+     * they can get selected via JS and the ace editor behavior can me modified
+     *
+     * @param  [type] $name    [description]
+     * @param  [type] $options [description]
+     * @return [type]          [description]
+     */
+    protected function getOption($name, $options)
+    {
+        $label = $this->_($name);
+        $label = "<span class='ace-option-label'>$label</span>";
+        $input = $options->render();
+        $input = "<span class='ace-option-input'>$input</span>";
+
+        return "<span class='ace-option'>$label $input</span>";
+    }
+
+    /**
+     * name2Label
+     * @param  string $name
+     * @return string
+     */
+    protected static function name2Label($name)
+    {
+        $nameParts = explode('_', $name);
+        foreach ($nameParts as $key => $namePart) {
+            $nameParts[$key] = ucfirst($namePart);
+        }
+        return implode(' ', $nameParts);
+    }
+
+    /**
+     * Get and set js data in context of this the field's name
+     * merge `$value` if it's an array
+     *
+     * @param  string $key
+     * @param  mixed $value
+     * @return mixed
+     */
+    protected function js($key = null, $value = null)
+    {
+        $js = $this->config->js($this->className);
+        if (!$js) $js = array();
+
+        if (is_null($key)) return $js;
+        if (is_null($value)) {
+            return isset($js[$key]) ? $js[$key] : array();
+        }
+
+        if (!isset($js[$key])) $js[$key] = array();
+
+        // merge value if it's an array
+        if (is_array($value)) {
+            $js[$key] = array_merge($js[$key], $value);
+        } else {
+            $js[$key] = $value;
+        }
+
+        $this->config->js($this->className, $js);
+
+        return $js[$key];
+    }
+
+
+    /**
+     * getConfigInputfields
+     *
+     * @param  Field  $field
+     * @return InputfieldWrapper
+     */
+    public function ___getConfigInputfields()
+    {
+        $field = $this->fields->get($this->name);
+
+        $inputfields = parent::___getConfigInputfields();
+
+        $wrapper = new InputfieldFieldset();
+        $wrapper->label = 'Ace Extended';
+
+        $info = $this->_('
+Note that the settings set via the **Options** menu above the field itself are saved in `localStorage`, so that the user does not have to set their individual settings over an over again.
+        ');
+
+        $fields = array(
+            array(
+                'type'           => 'InputfieldMarkup',
+                'markupText'     => $info,
+                'textformatters' => array('TextformatterMarkdownExtra'),
+            ),
+            array(
+                'type'           => 'InputfieldAsmSelect',
+                'name'           => 'modes',
+                'label'          => $this->_('Modes'),
+                'description'    => $this->_('Set the modes (languages) that should be selectable.'),
+                'notes'          => $this->_('If none is selected, all will be selectable.'),
+                'options'        => $this->getModes(),
+                'value'          => $this->getValue($field, 'modes'),
+            ),
+            array(
+                'type'           => 'InputfieldAsmSelect',
+                'name'           => 'themes',
+                'label'          => $this->_('Themes'),
+                'description'    => $this->_('Set the themes that should be selectable.'),
+                'notes'          => $this->_('If none is selected, all will be selectable.'),
+                'options'        => $this->getThemes(),
+                'value'          => $this->getValue($field, 'themes'),
+            ),
+            array(
+                'type'           => 'InputfieldRadios',
+                'name'           => 'optionsCollapsed',
+                'label'          => $this->_('Visibility of the Options menu'),
+                'options'        => array(
+                    Inputfield::collapsedNo => $this->_('Always open'),
+                    Inputfield::collapsedYes => $this->_('Always collapsed, requiring a click to open (default)'),
+                    Inputfield::collapsedHidden => $this->_('Hidden, not shown in the editor'),
+                ),
+                'value'          => $this->getValue($field, 'optionsCollapsed'),
+            ),
+            array(
+                'type'           => 'InputfieldSelect',
+                'name'           => 'theme',
+                'label'          => $this->_('Default theme'),
+                'options'        => $this->getThemes(),
+                'value'          => $this->getValue($field, 'theme'),
+                'columnWidth'    => 50,
+            ),
+            array(
+                'type'           => 'InputfieldSelect',
+                'name'           => 'mode',
+                'label'          => $this->_('Default mode (language)'),
+                'options'        => $this->getModes(),
+                'value'          => $this->getValue($field, 'mode'),
+                'columnWidth'    => 50,
+            ),
+            array(
+                'type'           => 'InputfieldInteger',
+                'name'           => 'fontSize',
+                'inputType'      => 'number',
+                'label'          => $this->_('Default font size'),
+                'options'        => $this->getThemes(),
+                'value'          => $this->getValue($field, 'fontSize'),
+                'columnWidth'    => 50,
+            ),
+            array(
+                'type'           => 'InputfieldText',
+                'name'           => 'fontFamily',
+                'label'          => $this->_('Default font family'),
+                'options'        => $this->getModes(),
+                'value'          => $this->getValue($field, 'fontFamily'),
+                'columnWidth'    => 50,
+            ),
+            array(
+                'type'           => 'InputfieldSelect',
+                'name'           => 'keybinding',
+                'label'          => $this->_('Key binding'),
+                'options'        => $this->getValue($field, 'keybindings'),
+                'value'          => $this->getValue($field, 'keybinding'),
+            ),
+        );
+
+        $wrapper->add($fields);
+
+        $inputfields->append($wrapper);
+
+        return $inputfields;
+    }
+
+    /**
+     * Get a field setting by `$name` or the default, if not defined.
+     *
+     * @param  Field  $field
+     * @param  string $name
+     * @return mixed
+     *
+     * @see  ___render()
+     * @see  getOptionsBar()
+     * @see  getThemeOptions()
+     * @see  getModeOptions()
+     * @see  ___getConfigInputfields()
+     */
+    public function getValue(Field $field, $name)
+    {
+        $defaults = self::getDefaultConfig();
+        $value = isset($field->$name) ? $field->$name : $defaults[$name];
+        return is_int($value) ? (int) $value : $value;
+    }
+}
