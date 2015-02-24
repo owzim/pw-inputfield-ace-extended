@@ -16,6 +16,7 @@ body.dragging-ace {
     opacity: 0.5;
     z-index: 90;
     border: 1px dashed grey;
+    border-bottom: none;
 }
 
 .InputfieldAceExtended .drag-hitarea,
@@ -31,7 +32,7 @@ body.dragging-ace {
 }
 
 .InputfieldAceExtended .dragger {
-    margin-top: -4px !important;
+    /*margin-top: -4px !important;*/
 }
 
 .InputfieldAceExtended .drag-hitarea:hover {

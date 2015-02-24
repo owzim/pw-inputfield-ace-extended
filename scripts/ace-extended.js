@@ -1,5 +1,22 @@
 (function($, window, undefined) { // safe scope
 
+    var Storage = function(namespace, config) {
+        this.namespace = namespace;
+        this.config = config;
+        this.set = function(name, value) {
+            if (window.localStorage) {
+                localStorage[this.namespace + name] = value;
+            }
+        }
+        this.get = function(name) {
+            if (window.localStorage) {
+                return localStorage[this.namespace + name] || this.config[name];
+            } else {
+                return this.config[name];
+            }
+        }
+    };
+
     var INPUT_FIELD_CLASS = 'InputfieldAceExtended';
 
     var DRAG_HITAREA_CLASS_NAME = 'drag-hitarea';
@@ -14,9 +31,10 @@
     };
 
     var aceHelper = {
-        get: function(editor, $editor, config, id) {
+        get: function(editor, $editor, config, storage) {
 
             return {
+                storage: storage,
                 setFontSize: function(size) {
                     size = parseInt(size);
                     editor.setFontSize(size);
@@ -62,23 +80,6 @@
 
                 },
 
-                storage: (function(){
-                    return {
-                        save: function(name, value) {
-                            if (window.localStorage) {
-                                localStorage[id + name] = value;
-                            }
-                        },
-                        get: function(name) {
-                            if (window.localStorage) {
-                                return localStorage[id + name];
-                            } else {
-                                config[name];
-                            }
-                        }
-                    }
-                })(),
-
                 ucFirst: function(str) {
                     return str.charAt(0).toUpperCase() + str.slice(1);
                 }
@@ -100,7 +101,8 @@
         var editor = ace.edit(id);
         var $editor = $wrapper.find('.ace_editor');
 
-        var helper = aceHelper.get(editor, $editor, config, id);
+        var storage = new Storage(id, config);
+        var helper = aceHelper.get(editor, $editor, config, storage);
 
         editor.on('change', function() {
             $textarea.val(editor.getValue());
@@ -110,13 +112,13 @@
         $.each(['theme','mode','fontSize','rows', 'fontFamily', 'keybinding'], function(index, name) {
 
             var $el = $wrapper.find('[name=ace-'+name+']');
-            var val = helper.storage.get(name) || config[name];
+            var val = storage.get(name);
             var ucfName = helper.ucFirst(name);
 
             $el.on('change', function() {
                 var val = $(this).val();
                 helper['set'+ucfName](val);
-                helper.storage.save(name, val)
+                storage.set(name, val)
                 config[name] = val;
             });
 
@@ -125,20 +127,20 @@
             // only save the value to storage if there is
             // an input field in the options menu
             if ($el.length) {
-                helper.storage.save(name, val);
+                storage.set(name, val);
             }
 
             $el.val(val);
             $el.trigger('change');
         });
 
-        var rows = helper.storage.get('rows');
+        var rows = storage.get('rows');
         var lineCount = editor.session.getLength();
 
         if (rows >= lineCount) {
             rows = lineCount + 1;
             helper.setRows(rows);
-            helper.storage.save('rows', rows);
+            storage.set('rows', rows);
         }
 
 
@@ -219,7 +221,7 @@
                         var pos = draggerPos / helper.getLineHeight();
 
                         helper.setRows(pos);
-                        helper.storage.save('rows', pos);
+                        storage.set('rows', pos);
                     }
 
                     $overlay.hide();
