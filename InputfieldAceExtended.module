@@ -12,7 +12,7 @@
  *
  * This module is sponsored in part by Nibiri, aka forum member Macrura
  *
- * @version 0.1.6
+ * @version 0.2.0
  *
  * @filesource
  *
@@ -23,6 +23,11 @@
  */
 
 class InputfieldAceExtended extends InputfieldTextarea {
+
+    const TITLE = 'ACE Extended';
+
+    const CLEAR_LOCAL_STORAGE_DATA_KEY = 'clear-local-storage';
+    const CLEAR_LOCAL_STORAGE_BUTTON_ID = 'ace-clear-local-storage';
 
     /**
      * A map of all modes from http://ace.c9.io/build/kitchen-sink.html
@@ -235,8 +240,8 @@ class InputfieldAceExtended extends InputfieldTextarea {
     public static function getModuleInfo()
     {
         return array(
-            'title'    => 'Inputfield ACE Extended',
-            'version'  => '0.1.6',
+            'title'    => 'Inputfield ' . self::TITLE,
+            'version'  => '0.2.0',
             'author'   => 'owzim',
             'icon'     => 'code',
             'href'     => 'https://github.com/owzim/pw-inputfield-ace-extended',
@@ -289,10 +294,16 @@ class InputfieldAceExtended extends InputfieldTextarea {
 
         $options = $this->getOptionsBar($field);
 
+        $id = $this->getLocalStorageID($field);
+
         $textarea = parent::___render();
-        $editor = "<div id='{$this->className}_{$this->name}-editor' class='ace-editor'></div>";
+        $editor = "<div id='{$id}' class='ace-editor'></div>";
 
         return "<div data-input-class='$this->className' data-field-name='{$this->name}'>{$options}{$editor}{$textarea}</div>";
+    }
+
+    public function getLocalStorageID($field) {
+        return "{$this->className}_{$field->name}_editor";
     }
 
     /**
@@ -502,21 +513,30 @@ class InputfieldAceExtended extends InputfieldTextarea {
      */
     public function ___getConfigInputfields()
     {
+        $this->config->scripts->add("{$this->jsUrl}/ace-extended.js");
+
         $field = $this->fields->get($this->name);
 
         $inputfields = parent::___getConfigInputfields();
 
         $wrapper = new InputfieldFieldset();
-        $wrapper->label = 'Ace Extended';
+        $wrapper->label = self::TITLE;
 
-        $info = $this->_('
-Note that the settings set via the **Options** menu above the editor itself are saved in `localStorage`, so that the user does not have to set their individual settings over an over again.
-        ');
+        $button = $this->modules->get('InputfieldButton');
+        $button->value = $this->_('Clear Local Storage');
+        $button->attr('data-' . self::CLEAR_LOCAL_STORAGE_DATA_KEY, $this->getLocalStorageID($field));
+        $button->attr('id', self::CLEAR_LOCAL_STORAGE_BUTTON_ID);
+        $button->icon = 'eraser';
+
+        $markupValue = array(
+            $this->_("Note that the settings via the **Options** menu above the editor itself are saved in `localStorage`, so that the user does not have to set their individual settings over an over again. If there are settings saved, you can clear it with the button below. If not, it will be disabled."),
+            $button->render(),
+        );
 
         $fields = array(
             array(
                 'type'           => 'InputfieldMarkup',
-                'markupText'     => $info,
+                'value'          => implode("\n", $markupValue),
                 'textformatters' => array('TextformatterMarkdownExtra'),
             ),
             array(

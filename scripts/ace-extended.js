@@ -1,21 +1,67 @@
+// localStorage fallback with cookies
+window.localStorage||Object.defineProperty(window,"localStorage",new function(){var a=[],b={};Object.defineProperty(b,"getItem",{value:function(a){return a?this[a]:null},writable:!1,configurable:!1,enumerable:!1}),Object.defineProperty(b,"key",{value:function(b){return a[b]},writable:!1,configurable:!1,enumerable:!1}),Object.defineProperty(b,"setItem",{value:function(a,b){a&&(document.cookie=escape(a)+"="+escape(b)+"; expires=Tue, 19 Jan 2038 03:14:07 GMT; path=/")},writable:!1,configurable:!1,enumerable:!1}),Object.defineProperty(b,"length",{get:function(){return a.length},configurable:!1,enumerable:!1}),Object.defineProperty(b,"removeItem",{value:function(a){a&&(document.cookie=escape(a)+"=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/")},writable:!1,configurable:!1,enumerable:!1}),this.get=function(){var c;for(var d in b)c=a.indexOf(d),-1===c?b.setItem(d,b[d]):a.splice(c,1),delete b[d];for(a;a.length>0;a.splice(0,1))b.removeItem(a[0]);for(var e,f,g=0,h=document.cookie.split(/\s*;\s*/);g<h.length;g++)e=h[g].split(/\s*=\s*/),e.length>1&&(b[f=unescape(e[0])]=unescape(e[1]),a.push(f));return b},this.configurable=!1,this.enumerable=!0});
+
 (function($, window, undefined) { // safe scope
 
+    /**
+     * Storage
+     *
+     * @param {string} namespace
+     * @param {object} config
+     */
     var Storage = function(namespace, config) {
+
         this.namespace = namespace;
         this.config = config;
+
         this.set = function(name, value) {
-            if (window.localStorage) {
-                localStorage[this.namespace + name] = value;
-            }
-        }
+            var values = this.getAll();
+            values[name] = value;
+            this.setAll(values);
+        };
+
         this.get = function(name) {
-            if (window.localStorage) {
-                return localStorage[this.namespace + name] || this.config[name];
+            var values = this.getAll();
+            return values[name] || this.config[name];
+        };
+
+        this.getAll = function() {
+            var values;
+            if (localStorage[this.namespace]) {
+                values = JSON.parse(localStorage.getItem(this.namespace));
             } else {
-                return this.config[name];
+                values = {};
             }
+            return values;
+        };
+
+        this.setAll = function(values) {
+            return localStorage.setItem(this.namespace, JSON.stringify(values));
+        };
+
+    };
+
+    /**
+     * clearAll
+     *
+     * @param  {string} namespace
+     */
+    Storage.clearAll = function(namespace) {
+        if (namespace) {
+            // static
+            localStorage.clear(namespace);
+        } else {
+            // instance
+            localStorage.clear(this.namespace);
         }
     };
+
+    Storage.has = function(namespace) {
+        return localStorage.getItem(namespace) ? true : false;
+    };
+
+    var CLEAR_LOCAL_STORAGE_DATA_KEY = 'clear-local-storage';
+    var CLEAR_LOCAL_STORAGE_BUTTON_SELECTOR = '#ace-clear-local-storage';
 
     var INPUT_FIELD_CLASS = 'InputfieldAceExtended';
 
@@ -25,6 +71,9 @@
     var DRAGGING_BODY_CLASS = 'dragging-ace';
     var DRAGGER_HEIGHT = 6;
     var MIN_ROWS = 3;
+
+    var ACE_FIELDS_SELECTOR = '[data-input-class='+INPUT_FIELD_CLASS+']';
+    var FIELD_NAME_DATA_KEY = 'field-name';
 
     var snapToGrip = function(value, gridSize) {
         return gridSize * Math.ceil(value / gridSize);
@@ -94,8 +143,6 @@
         var id = $placeHolder.attr('id');
         var $textarea = $wrapper.find('textarea');
 
-
-
         $placeHolder.text($textarea.val());
 
         var editor = ace.edit(id);
@@ -107,7 +154,6 @@
         editor.on('change', function() {
             $textarea.val(editor.getValue());
         });
-
 
         $.each(['theme','mode','fontSize','rows', 'fontFamily', 'keybinding'], function(index, name) {
 
@@ -272,13 +318,28 @@
 
     $(function() { // dom loaded
 
-        var $fields = $('[data-input-class='+INPUT_FIELD_CLASS+']');
+        $(CLEAR_LOCAL_STORAGE_BUTTON_SELECTOR).each(function() {
+
+            var $button = $(this);
+            var fieldName = $button.data(CLEAR_LOCAL_STORAGE_DATA_KEY);
+
+            if (!Storage.has(fieldName)) {
+                $button.attr('disabled', 'disabled').css({opacity: 0.4});
+            }
+
+            $button.on('click', function(evt) {
+                evt.preventDefault();
+                Storage.clearAll(fieldName);
+                $button.attr('disabled', 'disabled').css({opacity: 0.4});
+            });
+        });
+
+        var $fields = $(ACE_FIELDS_SELECTOR);
 
         $fields.each(function() {
             var $field = $(this),
-                fieldName = $field.data('field-name');
+                fieldName = $field.data(FIELD_NAME_DATA_KEY);
             acefy($field, config[INPUT_FIELD_CLASS][fieldName])
         });
     });
-
 })(jQuery, window);

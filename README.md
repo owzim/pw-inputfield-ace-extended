@@ -1,12 +1,18 @@
 # Inputfield ACE Extended
-Version `0.1.x`, for [ProcessWire 2.5.5](http://processwire.com/)
+Version `0.2.x`, for [ProcessWire 2.5.5](http://processwire.com/)
 
 This module is sponsored in part by [Nibiri](http://nibiri.com/), aka forum member [Macrura](https://processwire.com/talk/user/136-macrura/).
+
+## Changelog
+
+** 0.2.0 **
+  * add possibility to clear localStorage, add cookie fallback
+** 0.1.0 **
+  * initial version
 
 ## Roadmap
 
 * extend README.md
-* add possibility to clear `localStorage` on each field input settings and view currently saved settings
 * add option wordWrap
 * add option rulerPosition
 * add option showWhiteSpace
