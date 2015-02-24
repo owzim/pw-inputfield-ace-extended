@@ -6,10 +6,15 @@ This module is sponsored in part by [Nibiri](http://nibiri.com/), aka forum memb
 ## Changelog
 
 ** 0.3.0 **
+
   * add possiblity to apply advanced options via json string in a separate field setting
+
 ** 0.2.0 **
+
   * add possibility to clear localStorage, add cookie fallback
+
 ** 0.1.0 **
+
   * initial version
 
 ## Roadmap
