@@ -214,7 +214,7 @@ class InputfieldAceExtended extends InputfieldTextarea {
     {
         return array(
             'title'    => 'Inputfield ACE Extended',
-            'version'  => '0.1.1',
+            'version'  => '0.1.2',
             'author'   => 'owzim',
             'icon'     => 'code',
             'href'     => 'https://github.com/owzim/pw-inputfield-ace-extended',
@@ -488,7 +488,7 @@ class InputfieldAceExtended extends InputfieldTextarea {
         $wrapper->label = 'Ace Extended';
 
         $info = $this->_('
-Note that the settings set via the **Options** menu above the field itself are saved in `localStorage`, so that the user does not have to set their individual settings over an over again.
+Note that the settings set via the **Options** menu above the editor itself are saved in `localStorage`, so that the user does not have to set their individual settings over an over again.
         ');
 
         $fields = array(
@@ -501,8 +501,8 @@ Note that the settings set via the **Options** menu above the field itself are s
                 'type'           => 'InputfieldAsmSelect',
                 'name'           => 'modes',
                 'label'          => $this->_('Modes'),
-                'description'    => $this->_('Set the modes (languages) that should be selectable.'),
-                'notes'          => $this->_('If none is selected, all will be selectable.'),
+                'description'    => $this->_('Set the modes (languages) that should be selectable'),
+                'notes'          => $this->_('If none is selected, all will be selectable on editor itself'),
                 'options'        => $this->getModes(),
                 'value'          => $this->getValue($field, 'modes'),
             ),
@@ -510,8 +510,8 @@ Note that the settings set via the **Options** menu above the field itself are s
                 'type'           => 'InputfieldAsmSelect',
                 'name'           => 'themes',
                 'label'          => $this->_('Themes'),
-                'description'    => $this->_('Set the themes that should be selectable.'),
-                'notes'          => $this->_('If none is selected, all will be selectable.'),
+                'description'    => $this->_('Set the themes that should be selectable'),
+                'notes'          => $this->_('If none is selected, all will be selectable on editor itself'),
                 'options'        => $this->getThemes(),
                 'value'          => $this->getValue($field, 'themes'),
             ),
@@ -530,42 +530,51 @@ Note that the settings set via the **Options** menu above the field itself are s
                 'type'           => 'InputfieldSelect',
                 'name'           => 'theme',
                 'label'          => $this->_('Default theme'),
+                'notes'          => $this->_('Changable on editor itself'),
                 'options'        => $this->getThemes(),
                 'value'          => $this->getValue($field, 'theme'),
-                'columnWidth'    => 50,
+                'columnWidth'    => 33,
             ),
             array(
                 'type'           => 'InputfieldSelect',
                 'name'           => 'mode',
                 'label'          => $this->_('Default mode (language)'),
+                'notes'          => $this->_('Changable on editor itself'),
                 'options'        => $this->getModes(),
                 'value'          => $this->getValue($field, 'mode'),
-                'columnWidth'    => 50,
-            ),
-            array(
-                'type'           => 'InputfieldInteger',
-                'name'           => 'fontSize',
-                'inputType'      => 'number',
-                'label'          => $this->_('Default font size'),
-                'options'        => $this->getThemes(),
-                'value'          => $this->getValue($field, 'fontSize'),
-                'columnWidth'    => 50,
-            ),
-            array(
-                'type'           => 'InputfieldText',
-                'name'           => 'fontFamily',
-                'label'          => $this->_('Default font family'),
-                'options'        => $this->getModes(),
-                'value'          => $this->getValue($field, 'fontFamily'),
-                'columnWidth'    => 50,
+                'columnWidth'    => 34,
             ),
             array(
                 'type'           => 'InputfieldSelect',
                 'name'           => 'keybinding',
                 'label'          => $this->_('Key binding'),
                 'options'        => $this->getValue($field, 'keybindings'),
+                'notes'          => $this->_('**Not** changable on editor itself'),
                 'value'          => $this->getValue($field, 'keybinding'),
+                'columnWidth'    => 33,
             ),
+            array(
+                'type'           => 'InputfieldInteger',
+                'name'           => 'fontSize',
+                'inputType'      => 'number',
+                'label'          => $this->_('Default font size'),
+                'notes'          => $this->_('Changable on editor itself'),
+                'options'        => $this->getThemes(),
+                'value'          => $this->getValue($field, 'fontSize'),
+                'columnWidth'    => 50,
+                'min'            => 10,
+                'max'            => 28,
+            ),
+            array(
+                'type'           => 'InputfieldText',
+                'name'           => 'fontFamily',
+                'label'          => $this->_('Font family'),
+                'notes'          => $this->_('**Not** changable on editor itself'),
+                'options'        => $this->getModes(),
+                'value'          => $this->getValue($field, 'fontFamily'),
+                'columnWidth'    => 50,
+            ),
+
         );
 
         $wrapper->add($fields);

@@ -1,5 +1,5 @@
 # Inputfield ACE Extended
-Version `0.1.1`, for [ProcessWire 2.5.5](http://processwire.com/)
+Version `0.1.2`, for [ProcessWire 2.5.5](http://processwire.com/)
 
 ## Roadmap
 
