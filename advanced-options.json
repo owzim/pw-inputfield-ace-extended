@@ -1,0 +1,27 @@
+{
+  "editor": {
+    "highlightActiveLine": true,
+    "behavioursEnabled": true,
+    "wrapBehavioursEnabled": true
+  },
+
+  "renderer": {
+    "highlightGutterLine": false,
+    "showInvisibles": false,
+    "showPrintMargin": false,
+    "printMarginColumn": false,
+    "printMargin": false,
+    "showFoldWidgets": true,
+    "showLineNumbers": true,
+    "showGutter": true,
+    "displayIndentGuides": true,
+    "scrollPastEnd": true,
+    "fixedWidthGutter": false
+  },
+
+  "session": {
+    "useSoftTabs": true,
+    "tabSize": 4,
+    "wrap": true
+  }
+}

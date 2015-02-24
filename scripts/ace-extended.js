@@ -60,6 +60,9 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
         return localStorage.getItem(namespace) ? true : false;
     };
 
+    var CHECK_VALIDITY_LINK = '#ace-check-json-validity';
+    var CHECK_VALIDITY_SELECTOR = 'a[href="'+CHECK_VALIDITY_LINK+'"]';
+
     var CLEAR_LOCAL_STORAGE_DATA_KEY = 'clear-local-storage';
     var CLEAR_LOCAL_STORAGE_BUTTON_SELECTOR = '#ace-clear-local-storage';
 
@@ -131,6 +134,20 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
 
                 ucFirst: function(str) {
                     return str.charAt(0).toUpperCase() + str.slice(1);
+                },
+
+                setOptions: function(target, options) {
+                    switch (target) {
+                        case 'session':
+                            editor.getSession().setOptions(options);
+                        break;
+                        case 'editor':
+                            editor.setOptions(options);
+                        break;
+                        case 'renderer':
+                            editor.renderer.setOptions(options);
+                        break;
+                    }
                 }
             };
         }
@@ -153,6 +170,17 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
 
         editor.on('change', function() {
             $textarea.val(editor.getValue());
+        });
+
+        var advancedOptions = {};
+        try {
+            advancedOptions = JSON.parse(config.advancedOptions);
+        } catch (e) {
+            console && console.warn ? console.warn(e) : '';
+        }
+
+        $.each(['editor','renderer','session'], function(index, name) {
+            helper.setOptions(name, advancedOptions[name] || {});
         });
 
         $.each(['theme','mode','fontSize','rows', 'fontFamily', 'keybinding'], function(index, name) {
@@ -243,7 +271,7 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
 
                 if (targetPosSnappedInRows >= MIN_ROWS) {
                     $dragger.css({
-                        top: parseInt(areaFixedTop + targetPosSnapped) + "px",
+                        top: parseInt(areaFixedTop + targetPosSnapped + (DRAGGER_HEIGHT/2)) + "px",
                         left: parseInt(hitareaOffset.left) + "px",
                         width: areaWidth  + "px"
                     });
@@ -254,7 +282,7 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
                         width: areaWidth  + "px"
                     });
 
-                    $overlay.height(targetPosSnapped - DRAGGER_HEIGHT);
+                    $overlay.height(targetPosSnapped - (DRAGGER_HEIGHT/2));
 
                     if (targetPosSnapped != 0) {
                         draggerPos = targetPosSnapped;
@@ -324,28 +352,67 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
 
     $(function() { // dom loaded
 
-        $(CLEAR_LOCAL_STORAGE_BUTTON_SELECTOR).each(function() {
+        // on input tab
+        (function() {
+            "use strict";
 
-            var $button = $(this);
-            var fieldName = $button.data(CLEAR_LOCAL_STORAGE_DATA_KEY);
-
-            if (!Storage.has(fieldName)) {
-                $button.attr('disabled', 'disabled').css({opacity: 0.4});
-            }
-
-            $button.on('click', function(evt) {
+            $(CHECK_VALIDITY_SELECTOR).on('click', function(evt) {
                 evt.preventDefault();
-                Storage.clearAll(fieldName);
-                $button.attr('disabled', 'disabled').css({opacity: 0.4});
+
+                var $advancedOptions = $('textarea[name="advancedOptions"]');
+
+                if ($advancedOptions.length) {
+
+                    var text = $advancedOptions.val();
+
+                    if ($.trim(text) === '') {
+                        alert('OK!');
+                        return;
+                    }
+
+                    var error = false;
+
+                    try {
+                        JSON.parse(text);
+                    } catch (e) {
+                        alert(e);
+                        error = true;
+                    }
+
+                    if (!error) {
+                        alert('OK!');
+                    }
+                }
             });
-        });
 
-        var $fields = $(ACE_FIELDS_SELECTOR);
+            $(CLEAR_LOCAL_STORAGE_BUTTON_SELECTOR).each(function() {
 
-        $fields.each(function() {
-            var $field = $(this),
-                fieldName = $field.data(FIELD_NAME_DATA_KEY);
-            acefy($field, config[INPUT_FIELD_CLASS][fieldName])
-        });
+                var $button = $(this);
+                var fieldName = $button.data(CLEAR_LOCAL_STORAGE_DATA_KEY);
+
+                if (!Storage.has(fieldName)) {
+                    $button.attr('disabled', 'disabled').css({opacity: 0.4});
+                }
+
+                $button.on('click', function(evt) {
+                    evt.preventDefault();
+                    Storage.clearAll(fieldName);
+                    $button.attr('disabled', 'disabled').css({opacity: 0.4});
+                });
+            });
+        })();
+
+        // on page edit
+        (function() {
+            "use strict";
+
+            var $fields = $(ACE_FIELDS_SELECTOR);
+
+            $fields.each(function() {
+                var $field = $(this),
+                    fieldName = $field.data(FIELD_NAME_DATA_KEY);
+                acefy($field, config[INPUT_FIELD_CLASS][fieldName])
+            });
+        })();
     });
 })(jQuery, window);

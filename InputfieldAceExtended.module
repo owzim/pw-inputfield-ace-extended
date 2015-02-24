@@ -12,7 +12,7 @@
  *
  * This module is sponsored in part by Nibiri, aka forum member Macrura
  *
- * @version 0.2.1
+ * @version 0.3.0
  *
  * @filesource
  *
@@ -28,6 +28,7 @@ class InputfieldAceExtended extends InputfieldTextarea {
 
     const CLEAR_LOCAL_STORAGE_DATA_KEY = 'clear-local-storage';
     const CLEAR_LOCAL_STORAGE_BUTTON_ID = 'ace-clear-local-storage';
+    const CHECK_VALIDITY_LINK = '#ace-check-json-validity';
 
     /**
      * A map of all modes from http://ace.c9.io/build/kitchen-sink.html
@@ -193,6 +194,7 @@ class InputfieldAceExtended extends InputfieldTextarea {
      */
     public static function getDefaultConfig()
     {
+
         return array(
             'theme'         => 'tomorrow',
             'mode'          => 'plain_text',
@@ -230,6 +232,7 @@ class InputfieldAceExtended extends InputfieldTextarea {
             ),
 
             'optionsCollapsed' => Inputfield::collapsedYes,
+            'advancedOptions' => file_get_contents(__DIR__ . '/advanced-options.json'),
         );
     }
 
@@ -241,7 +244,7 @@ class InputfieldAceExtended extends InputfieldTextarea {
     {
         return array(
             'title'    => 'Inputfield ' . self::TITLE,
-            'version'  => '0.2.1',
+            'version'  => '0.3.0',
             'author'   => 'owzim',
             'icon'     => 'code',
             'href'     => 'https://github.com/owzim/pw-inputfield-ace-extended',
@@ -299,7 +302,10 @@ class InputfieldAceExtended extends InputfieldTextarea {
         $textarea = parent::___render();
         $editor = "<div id='{$id}' class='ace-editor'></div>";
 
-        return "<div data-input-class='$this->className' data-field-name='{$this->name}'>{$options}{$editor}{$textarea}</div>";
+        return "
+        <div data-input-class='$this->className' data-field-name='{$this->name}'>
+            {$options}{$editor}{$textarea}
+        </div>";
     }
 
     public function getLocalStorageID($field) {
@@ -616,10 +622,30 @@ class InputfieldAceExtended extends InputfieldTextarea {
                 'value'          => $this->getValue($field, 'fontFamily'),
                 'columnWidth'    => 67,
             ),
-
         );
 
         $wrapper->add($fields);
+
+
+        $advancedDescription = sprintf(
+            $this->_('Please refer to the [Configuration Reference](%s). Must be valid JSON, [check now](%s) for validity.'),
+            'https://github.com/ajaxorg/ace/wiki/Configuring-Ace',
+            self::CHECK_VALIDITY_LINK
+        );
+
+        $advancedValue = $this->getValue($field, 'advancedOptions');
+        $advancedRows = count(preg_split('/\n|\r/', $advancedValue));
+
+        $advancedOptions = $this->modules->get('InputfieldTextarea');
+        $advancedOptions->label = $this->_('Advanced options');
+        $advancedOptions->description = $advancedDescription;
+        $advancedOptions->name = 'advancedOptions';
+        $advancedOptions->value = $advancedValue;
+        $advancedOptions->rows = $advancedRows;
+        $advancedOptions->collapsed = Inputfield::collapsedYes;
+        $advancedOptions->attr('style', 'white-space: pre; font-family: ' . $this->getValue($field, 'fontFamily'));
+
+        $wrapper->add($advancedOptions);
 
         $inputfields->append($wrapper);
 
