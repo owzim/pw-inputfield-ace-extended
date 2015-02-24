@@ -152,7 +152,7 @@
             var $dragger = $("<div></div>")
                 .addClass(DRAGGER_CLASS_NAME)
                 .height(DRAGGER_HEIGHT).css({
-                    marginTop: -(DRAGGER_HEIGHT/2),
+                    marginTop: (-(DRAGGER_HEIGHT)) + "px",
                     position: 'fixed'
                 });
 
@@ -200,7 +200,7 @@
                         width: areaWidth  + "px"
                     });
 
-                    $overlay.height(targetPosSnapped - ($dragger.height() / 2));
+                    $overlay.height(targetPosSnapped - DRAGGER_HEIGHT);
 
                     if (targetPosSnapped != 0) {
                         draggerPos = targetPosSnapped;
