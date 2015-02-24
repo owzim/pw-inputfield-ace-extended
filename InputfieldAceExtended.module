@@ -214,7 +214,7 @@ class InputfieldAceExtended extends InputfieldTextarea {
     {
         return array(
             'title'    => 'Inputfield ACE Extended',
-            'version'  => '0.1.4',
+            'version'  => '0.1.5',
             'author'   => 'owzim',
             'icon'     => 'code',
             'href'     => 'https://github.com/owzim/pw-inputfield-ace-extended',
@@ -561,7 +561,7 @@ Note that the settings set via the **Options** menu above the editor itself are 
                 'notes'          => $this->_('Changable on editor itself'),
                 'options'        => $this->getThemes(),
                 'value'          => $this->getValue($field, 'fontSize'),
-                'columnWidth'    => 50,
+                'columnWidth'    => 33,
                 'min'            => 10,
                 'max'            => 28,
             ),
@@ -572,7 +572,7 @@ Note that the settings set via the **Options** menu above the editor itself are 
                 'notes'          => $this->_('**Not** changable on editor itself'),
                 'options'        => $this->getModes(),
                 'value'          => $this->getValue($field, 'fontFamily'),
-                'columnWidth'    => 50,
+                'columnWidth'    => 67,
             ),
 
         );
