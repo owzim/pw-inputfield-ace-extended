@@ -183,10 +183,16 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
         var rows = storage.get('rows');
         var lineCount = editor.session.getLength();
 
-        if (rows >= lineCount) {
+        if (rows >= lineCount && rows > config.rows) {
+            // if the saved row setting is larger than the actual rows
+            // make it wrap around the text, and add one empty line at the end
             rows = lineCount + 1;
             helper.setRows(rows);
             storage.set('rows', rows);
+        } if ($.trim($textarea.text()) === '') {
+            // if textfield is empty, set the rows count from the field settings
+            helper.setRows(config.rows);
+            storage.set('rows', config.rows);
         }
 
 
