@@ -1,5 +1,5 @@
 # Inputfield ACE Extended
-Version `0.1.5`, for [ProcessWire 2.5.5](http://processwire.com/)
+Version `0.1.x`, for [ProcessWire 2.5.5](http://processwire.com/)
 
 This module is sponsored in part by [Nibiri](http://nibiri.com/), aka forum member [Macrura](https://processwire.com/talk/user/136-macrura/).
 

@@ -1,5 +1,27 @@
 <?php
 
+/**
+ * Class definition of InputfieldAceExtended
+ *
+ * A Inputfield module for ProcessWire CMS/CMF
+ *
+ * See README.md for usage instructions.
+ *
+ * @author Christian (owzim) Raunitschka <git@raunitschka.de>
+ * @copyright Copyright (c) 2015, Christian Raunitschka
+ *
+ * This module is sponsored in part by Nibiri, aka forum member Macrura
+ *
+ * @version 0.1.6
+ *
+ * @filesource
+ *
+ * @see https://github.com/owzim/pw-inputfield-ace-extended
+ * @see http://raunitschka.de
+ * @see http://nibiri.com
+ * @see http://www.processwire.com
+ */
+
 class InputfieldAceExtended extends InputfieldTextarea {
 
     /**
@@ -214,7 +236,7 @@ class InputfieldAceExtended extends InputfieldTextarea {
     {
         return array(
             'title'    => 'Inputfield ACE Extended',
-            'version'  => '0.1.5',
+            'version'  => '0.1.6',
             'author'   => 'owzim',
             'icon'     => 'code',
             'href'     => 'https://github.com/owzim/pw-inputfield-ace-extended',
