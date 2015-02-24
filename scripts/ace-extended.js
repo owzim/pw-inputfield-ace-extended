@@ -136,18 +136,8 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
                     return str.charAt(0).toUpperCase() + str.slice(1);
                 },
 
-                setOptions: function(target, options) {
-                    switch (target) {
-                        case 'session':
-                            editor.getSession().setOptions(options);
-                        break;
-                        case 'editor':
-                            editor.setOptions(options);
-                        break;
-                        case 'renderer':
-                            editor.renderer.setOptions(options);
-                        break;
-                    }
+                setOptions: function(options) {
+                    editor.setOptions(options);
                 }
             };
         }
@@ -179,9 +169,7 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
             console && console.warn ? console.warn(e) : '';
         }
 
-        $.each(['editor','renderer','session'], function(index, name) {
-            helper.setOptions(name, advancedOptions[name] || {});
-        });
+        helper.setOptions(advancedOptions);
 
         $.each(['theme','mode','fontSize','rows', 'fontFamily', 'keybinding'], function(index, name) {
 
