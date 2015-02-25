@@ -82,10 +82,6 @@ body.dragging-ace {
     z-index: 110;
 }
 
-.InputfieldAceExtended .FieldtypeTextarea {
-    display: none;
-}
-
 .InputfieldAceExtended .ace-option {
     margin-right: 1em;
 }

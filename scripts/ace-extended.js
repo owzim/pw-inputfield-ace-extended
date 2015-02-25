@@ -149,6 +149,7 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
 
         var id = $placeHolder.attr('id');
         var $textarea = $wrapper.find('textarea');
+        $textarea.hide();
 
         $placeHolder.text($textarea.val());
 
