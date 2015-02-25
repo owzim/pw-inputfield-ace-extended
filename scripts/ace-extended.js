@@ -60,11 +60,7 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
         return localStorage.getItem(namespace) ? true : false;
     };
 
-    var CHECK_VALIDITY_LINK = '#ace-check-json-validity';
-    var CHECK_VALIDITY_SELECTOR = 'a[href="'+CHECK_VALIDITY_LINK+'"]';
 
-    var CLEAR_LOCAL_STORAGE_DATA_KEY = 'clear-local-storage';
-    var CLEAR_LOCAL_STORAGE_BUTTON_SELECTOR = '#ace-clear-local-storage';
 
     var INPUT_FIELD_CLASS = 'InputfieldAceExtended';
 
@@ -345,6 +341,11 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
         (function() {
             "use strict";
 
+            var CHECK_VALIDITY_LINK = '#ace-check-json-validity';
+            var CHECK_VALIDITY_SELECTOR = 'a[href="'+CHECK_VALIDITY_LINK+'"]';
+            var CLEAR_LOCAL_STORAGE_DATA_KEY = 'clear-local-storage';
+            var CLEAR_LOCAL_STORAGE_BUTTON_SELECTOR = '#ace-clear-local-storage';
+
             $(CHECK_VALIDITY_SELECTOR).on('click', function(evt) {
                 evt.preventDefault();
 
@@ -395,12 +396,56 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
         (function() {
             "use strict";
 
-            var $fields = $(ACE_FIELDS_SELECTOR);
+            var INPUT_FIELD_COLLAPSED_CLASS = 'InputfieldStateCollapsed';
+            var INPUT_FIELD_TOGGLE_CLASS = 'InputfieldHeader';
 
-            $fields.each(function() {
-                var $field = $(this),
-                    fieldName = $field.data(FIELD_NAME_DATA_KEY);
-                acefy($field, config[INPUT_FIELD_CLASS][fieldName])
+            // get each field
+            var $fieldWrappers = $('.' + INPUT_FIELD_CLASS);
+
+            // all this overhead fixes #2
+            $fieldWrappers.each(function() {
+
+                // the actual entire field
+                var $fieldWrapper = $(this);
+
+                // the ace field wrapper withing
+                var $aceField =  $fieldWrapper.find(ACE_FIELDS_SELECTOR);
+
+                // get the api fieldname
+                var fieldName = $aceField.data(FIELD_NAME_DATA_KEY);
+
+                // the header that toggles the fields collapse state
+                var $toggle = $fieldWrapper.find('>.'+INPUT_FIELD_TOGGLE_CLASS);
+
+                // is it collapsed?
+                var isCollapsed = $fieldWrapper.hasClass(INPUT_FIELD_COLLAPSED_CLASS);
+
+                // not initialized yet
+                var isInit = false;
+
+                // if it is not collapsed go ahead, and initalize the ace editor
+                if (!isCollapsed) {
+                    acefy($aceField, config[INPUT_FIELD_CLASS][fieldName]);
+                    isInit = true;
+                }
+
+                // initalize the edior after the toggle has opened the field
+                $toggle.on('click', function() {
+                    var $toggle = $(this);
+
+                    // only init once
+                    if (!isInit && $fieldWrapper.hasClass(INPUT_FIELD_COLLAPSED_CLASS)) {
+                        // hack with timeout to init after the collapse animattion has
+                        // finished, I wish there was a better way
+                        $aceField.css({ opacity: 0 });
+
+                        setTimeout(function()  {
+                            $aceField.css({ opacity: 1 });
+                            acefy($aceField, config[INPUT_FIELD_CLASS][fieldName]);
+                            isInit = true;
+                        }, 333);
+                    }
+                });
             });
         })();
     });
