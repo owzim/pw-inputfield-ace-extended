@@ -9,6 +9,9 @@ body.dragging-ace {
 
 .InputfieldAceExtended .ace-editor {
     position: relative;
+    padding: 0 !important;
+    margin: 0 !important;
+    border-top: 0 !important;
 }
 
 .InputfieldAceExtended .overlay {
@@ -43,7 +46,7 @@ body.dragging-ace {
     bottom: 0;
     opacity: 0.5;
     background: none;
-    border-bottom: 1px solid grey;
+    /*border-bottom: 1px solid grey;*/
     z-index: 100;
 }
 

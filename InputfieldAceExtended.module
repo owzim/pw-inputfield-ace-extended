@@ -12,7 +12,7 @@
  *
  * This module is sponsored in part by Nibiri, aka forum member Macrura
  *
- * @version 0.4.1
+ * @version 0.4.2
  *
  * @filesource
  *
@@ -245,7 +245,7 @@ class InputfieldAceExtended extends InputfieldTextarea {
         return array(
             'title'    => 'Inputfield ' . self::TITLE,
             'summary'  => 'A highly configurable and flexible ACE editor input field.',
-            'version'  => '0.4.1',
+            'version'  => '0.4.2',
             'author'   => 'owzim',
             'icon'     => 'code',
             'href'     => 'https://github.com/owzim/pw-inputfield-ace-extended',
@@ -301,10 +301,14 @@ class InputfieldAceExtended extends InputfieldTextarea {
         $id = $this->getLocalStorageID($field);
 
         $textarea = parent::___render();
-        $editor = "<div id='{$id}' class='ace-editor'></div>";
+
+        $editor = "
+        <div class='InputfieldMarkup'>
+            <div id='{$id}' class='InputfieldContent ace-editor'></div>
+        </div>";
 
         return "
-        <div data-input-class='$this->className' data-field-name='{$this->name}'>
+        <div data-input-class='{$this->className}' data-field-name='{$this->name}'>
             {$options}{$editor}{$textarea}
         </div>";
     }
