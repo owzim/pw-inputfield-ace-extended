@@ -244,6 +244,7 @@ class InputfieldAceExtended extends InputfieldTextarea {
     {
         return array(
             'title'    => 'Inputfield ' . self::TITLE,
+            'summary'  => 'A highly configurable and flexible ACE editor input field.',
             'version'  => '0.4.0',
             'author'   => 'owzim',
             'icon'     => 'code',
@@ -390,6 +391,7 @@ class InputfieldAceExtended extends InputfieldTextarea {
                 $themes[$optionsName] = self::name2Label($optionsName);
             }
         }
+        ksort($themes);
         return $themes;
     }
 
@@ -443,6 +445,7 @@ class InputfieldAceExtended extends InputfieldTextarea {
                 $modes[$optionsName] = $label;
             }
         }
+        ksort($modes);
         return $modes;
     }
 
