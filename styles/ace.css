@@ -11,7 +11,8 @@ body.dragging-ace {
     position: relative;
     padding: 0 !important;
     margin: 0 !important;
-    border-top: 0 !important;
+    margin-top: -1px !important;
+    /*border-top: 0 !important;*/
 }
 
 .InputfieldAceExtended .overlay {

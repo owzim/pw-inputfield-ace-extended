@@ -9,23 +9,26 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
      * @param {string} namespace
      * @param {object} config
      */
-    var Storage = function(namespace, config) {
+    var Storage = function(namespace, config, enabled) {
 
         this.namespace = namespace;
         this.config = config;
 
         this.set = function(name, value) {
+            if (!enabled) return;
             var values = this.getAll();
             values[name] = value;
             this.setAll(values);
         };
 
         this.get = function(name) {
+            if (!enabled) return this.config[name];
             var values = this.getAll();
             return values[name] || this.config[name];
         };
 
         this.getAll = function() {
+            if (!enabled) return this.config;
             var values;
             if (localStorage[this.namespace]) {
                 values = JSON.parse(localStorage.getItem(this.namespace));
@@ -79,9 +82,9 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
     };
 
     var aceHelper = {
-        get: function(editor, $editor, config, storage) {
+        get: function(editor, $editor, config, storage, ready) {
 
-            return {
+            var rtn = {
                 storage: storage,
                 setFontSize: function(size) {
                     size = parseInt(size);
@@ -117,14 +120,28 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
 
                 getLineHeight: function(realHeight) {
 
-                    var $line = $editor.find('.ace_line');
+                    return editor.renderer.lineHeight;
 
-                    // this fixes a rounding issue on firefox
-                    if (typeof window.getComputedStyle !== "undefined") {
-                        return parseFloat(window.getComputedStyle($line[0]).height);
-                    } else {
-                        return $line.height();
+                    // var $line = $editor.find('.ace_line');
+                    // setInterval(function() {
+                    //     console.log($line.height());
+
+                    // },1000);
+
+                    window.fff = function() {
+                        return editor.renderer.lineHeight;
                     }
+
+                    return 10;
+
+                    // console.log('editor.container.style.lineHeight', );
+                    console.log('editor.renderer.lineHeight', editor.renderer.lineHeight);
+                    // this fixes a rounding issue on firefox
+                    // if (typeof window.getComputedStyle !== "undefined") {
+                        // return parseFloat(window.getComputedStyle($line[0]).height);
+                    // } else {
+                        // return $line.height();
+                    // }
 
                 },
 
@@ -136,6 +153,22 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
                     editor.setOptions(options);
                 }
             };
+
+            if(!ready) ready = function() {};
+
+            var t;
+
+            var check = function() {
+                if (!editor.renderer.lineHeight) {
+                    t = setTimeout(check, 100);
+                } else {
+                    clearTimeout(t);
+                    ready(rtn);
+                }
+            };
+
+            check();
+
         }
     }
 
@@ -152,187 +185,191 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
         var editor = ace.edit(id);
         var $editor = $wrapper.find('.ace_editor');
 
-        var storage = new Storage(id, config);
-        var helper = aceHelper.get(editor, $editor, config, storage);
+        var storage = new Storage(id, config, config.enableLocalStorage || false);
+        var helper = aceHelper.get(editor, $editor, config, storage, function(helper) {
 
-        editor.on('change', function() {
-            $textarea.val(editor.getValue());
-        });
-
-        var advancedOptions = {};
-        try {
-            advancedOptions = JSON.parse(config.advancedOptions);
-        } catch (e) {
-            console && console.warn ? console.warn(e) : '';
-        }
-
-        helper.setOptions(advancedOptions);
-
-        $.each(['theme','mode','fontSize','rows', 'fontFamily', 'keybinding'], function(index, name) {
-
-            var $el = $wrapper.find('[name=ace-'+name+']');
-            var val = storage.get(name);
-            var ucfName = helper.ucFirst(name);
-
-            $el.on('change', function() {
-                var val = $(this).val();
-                helper['set'+ucfName](val);
-                storage.set(name, val)
-                config[name] = val;
+            editor.on('change', function() {
+                $textarea.val(editor.getValue());
             });
 
-            helper['set'+ucfName](val);
-
-            // only save the value to storage if there is
-            // an input field in the options menu
-            if ($el.length) {
-                storage.set(name, val);
+            var advancedOptions = {};
+            try {
+                advancedOptions = JSON.parse(config.advancedOptions);
+            } catch (e) {
+                console && console.warn ? console.warn(e) : '';
             }
 
-            $el.val(val);
-            $el.trigger('change');
-        });
+            helper.setOptions(advancedOptions);
 
-        var rows = storage.get('rows');
-        var lineCount = editor.session.getLength();
+            $.each(['theme','mode','fontSize','rows', 'fontFamily', 'keybinding'], function(index, name) {
 
-        if (rows >= lineCount && rows > config.rows) {
-            // if the saved row setting is larger than the actual rows
-            // make it wrap around the text, and add one empty line at the end
-            rows = lineCount + 1;
-            helper.setRows(rows);
-            storage.set('rows', rows);
-        } if ($.trim($textarea.text()) === '') {
-            // if textfield is empty, set the rows count from the field settings
-            helper.setRows(config.rows);
-            storage.set('rows', config.rows);
-        }
+                var $el = $wrapper.find('[name=ace-'+name+']');
+                var val = storage.get(name);
+                var ucfName = helper.ucFirst(name);
 
-
-        // TODO: refactor this, not pretty
-        (function() { // safe scope
-            "use strict";
-
-            var $dragHitarea = $("<div></div>")
-                .addClass(DRAG_HITAREA_CLASS_NAME)
-                .height(DRAGGER_HEIGHT);
-            var $dragger = $("<div></div>")
-                .addClass(DRAGGER_CLASS_NAME)
-                .height(DRAGGER_HEIGHT).css({
-                    marginTop: (-(DRAGGER_HEIGHT)) + "px",
-                    position: 'fixed'
+                $el.on('change', function() {
+                    var val = $(this).val();
+                    helper['set'+ucfName](val);
+                    storage.set(name, val)
+                    config[name] = val;
                 });
 
-            var $overlay = $("<div></div>")
-                .addClass(OVERLAY_CLASS_NAME).css({
-                    position: 'fixed',
-                    width: "100%",
-                    height: "100%"
-                });
+                helper['set'+ucfName](val);
 
-            $placeHolder.append($dragHitarea);
-            $placeHolder.append($dragger);
-            $placeHolder.append($overlay);
-
-            var draggerPos = 0;
-            var lineHeight = helper.getLineHeight();
-
-            var getMousePos = function($hitarea, e) {
-                var hitareaOffset = $hitarea.offset();
-                var relX = e.pageX - hitareaOffset.left;
-                var relY = e.pageY - hitareaOffset.top;
-
-                hitareaOffset.left = parseInt(hitareaOffset.left);
-                hitareaOffset.top = parseInt(hitareaOffset.top);
-
-                var areaFixedTop = parseInt($placeHolder.offset().top - $(window).scrollTop());
-
-                var areaHeight = parseInt($placeHolder.height() - $dragHitarea.height());
-                var areaWidth = $placeHolder.width();
-
-                var targetPos = parseInt(areaHeight + relY) - ($dragger.height() / 2);
-                var targetPosSnapped = snapToGrip(targetPos, lineHeight);
-                var targetPosSnappedInRows = targetPosSnapped / lineHeight;
-
-                if (targetPosSnappedInRows >= MIN_ROWS) {
-                    $dragger.css({
-                        top: parseInt(areaFixedTop + targetPosSnapped + (DRAGGER_HEIGHT/2)) + "px",
-                        left: parseInt(hitareaOffset.left) + "px",
-                        width: areaWidth  + "px"
-                    });
-
-                    $overlay.css({
-                        top: parseInt(areaFixedTop) + "px",
-                        left: parseInt(hitareaOffset.left) + "px",
-                        width: areaWidth  + "px"
-                    });
-
-                    $overlay.height(targetPosSnapped - (DRAGGER_HEIGHT/2));
-
-                    if (targetPosSnapped != 0) {
-                        draggerPos = targetPosSnapped;
-                    }
+                // only save the value to storage if there is
+                // an input field in the options menu
+                if ($el.length) {
+                    storage.set(name, val);
                 }
 
+                $el.val(val);
+                $el.trigger('change');
+            });
 
+            var rows = storage.get('rows');
+            var lineCount = editor.session.getLength();
+
+            if (rows >= lineCount && rows > config.rows) {
+                // if the saved row setting is larger than the actual rows
+                // make it wrap around the text, and add one empty line at the end
+                rows = lineCount + 1;
+                helper.setRows(rows);
+                storage.set('rows', rows);
+            } if ($.trim($textarea.text()) === '') {
+                // if textfield is empty, set the rows count from the field settings
+                helper.setRows(config.rows);
+                storage.set('rows', config.rows);
             }
 
-            var util = {
-                off: function() {
 
-                    $('body').removeClass(DRAGGING_BODY_CLASS);
-
-                    if (draggerPos) {
-                        var pos = draggerPos / helper.getLineHeight();
-
-                        helper.setRows(pos);
-                        storage.set('rows', pos);
-                    }
-
-                    $overlay.hide();
-                    $overlay.css({
-                        width: 0,
-                        height: 0
-                    });
-                    $dragger.hide();
-                    $dragger.css({top: (-$dragger.height()) + "px" });
-
-                },
-                on: function() {
-                    $('body').addClass(DRAGGING_BODY_CLASS);
-                    $dragger.show();
-                    $overlay.show();
-                    lineHeight = helper.getLineHeight();
-                }
-            }
-
-            util.off();
-
-
-            (function() { // mouse events
+            // TODO: refactor this, not pretty
+            (function() { // safe scope
                 "use strict";
 
-                var isDown = false;
+                var $dragHitarea = $("<div></div>")
+                    .addClass(DRAG_HITAREA_CLASS_NAME)
+                    .height(DRAGGER_HEIGHT);
+                var $dragger = $("<div></div>")
+                    .addClass(DRAGGER_CLASS_NAME)
+                    .height(DRAGGER_HEIGHT).css({
+                        marginTop: (-(DRAGGER_HEIGHT)) + "px",
+                        position: 'fixed'
+                    });
 
-                $dragHitarea.on('mousedown', function() {
-                    isDown = true;
-                });
+                var $overlay = $("<div></div>")
+                    .addClass(OVERLAY_CLASS_NAME).css({
+                        position: 'fixed',
+                        width: "100%",
+                        height: "100%"
+                    });
 
-                $(window).on('mouseup', function() {
-                    if (isDown) {
-                        isDown = false;
-                        util.off();
+                $placeHolder.append($dragHitarea);
+                $placeHolder.append($dragger);
+                $placeHolder.append($overlay);
+
+                var draggerPos = 0;
+                var lineHeight = helper.getLineHeight();
+
+                var getMousePos = function($hitarea, e) {
+                    var hitareaOffset = $hitarea.offset();
+                    var relX = e.pageX - hitareaOffset.left;
+                    var relY = e.pageY - hitareaOffset.top;
+
+                    hitareaOffset.left = parseInt(hitareaOffset.left);
+                    hitareaOffset.top = parseInt(hitareaOffset.top);
+
+                    var areaFixedTop = parseInt($placeHolder.offset().top - $(window).scrollTop());
+
+                    var areaHeight = parseInt($placeHolder.height() - $dragHitarea.height());
+                    var areaWidth = $placeHolder.width();
+
+                    var targetPos = parseInt(areaHeight + relY) - ($dragger.height() / 2);
+                    var targetPosSnapped = snapToGrip(targetPos, lineHeight);
+                    var targetPosSnappedInRows = targetPosSnapped / lineHeight;
+
+                    if (targetPosSnappedInRows >= MIN_ROWS) {
+                        $dragger.css({
+                            top: parseInt(areaFixedTop + targetPosSnapped + (DRAGGER_HEIGHT/2)) + "px",
+                            left: parseInt(hitareaOffset.left) + "px",
+                            width: areaWidth  + "px"
+                        });
+
+                        $overlay.css({
+                            top: parseInt(areaFixedTop) + "px",
+                            left: parseInt(hitareaOffset.left) + "px",
+                            width: areaWidth  + "px"
+                        });
+
+                        $overlay.height(targetPosSnapped - (DRAGGER_HEIGHT/2));
+
+                        if (targetPosSnapped != 0) {
+                            draggerPos = targetPosSnapped;
+                        }
                     }
-                });
 
-                $(window).on('mousemove', function(e) {
-                    if (isDown) {
-                        util.on();
-                        getMousePos($dragHitarea, e);
+
+                }
+
+                var util = {
+                    off: function() {
+
+                        $('body').removeClass(DRAGGING_BODY_CLASS);
+
+                        if (draggerPos) {
+                            var pos = draggerPos / helper.getLineHeight();
+
+                            helper.setRows(pos);
+                            storage.set('rows', pos);
+                        }
+
+                        $overlay.hide();
+                        $overlay.css({
+                            width: 0,
+                            height: 0
+                        });
+                        $dragger.hide();
+                        $dragger.css({top: (-$dragger.height()) + "px" });
+
+                    },
+                    on: function() {
+                        $('body').addClass(DRAGGING_BODY_CLASS);
+                        $dragger.show();
+                        $overlay.show();
+                        lineHeight = helper.getLineHeight();
                     }
-                });
+                }
+
+                util.off();
+
+
+                (function() { // mouse events
+                    "use strict";
+
+                    var isDown = false;
+
+                    $dragHitarea.on('mousedown', function() {
+                        isDown = true;
+                    });
+
+                    $(window).on('mouseup', function() {
+                        if (isDown) {
+                            isDown = false;
+                            util.off();
+                        }
+                    });
+
+                    $(window).on('mousemove', function(e) {
+                        if (isDown) {
+                            util.on();
+                            getMousePos($dragHitarea, e);
+                        }
+                    });
+                })();
             })();
-        })();
+
+        });
+
+
     };
 
     $(function() { // dom loaded
