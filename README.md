@@ -15,19 +15,19 @@ It does not expose many hooks. Please report if you need certain ones.
 
 ## Changelog
 
-** 0.4.0 **
+**0.4.0**
 
   * move advanced options into one dimensional hash, rather that in sub objects like `editor`, 'session' etc.
 
-** 0.3.0 **
+**0.3.0**
 
   * add possiblity to apply advanced options via json string in a separate field setting
 
-** 0.2.0 **
+**0.2.0**
 
   * add possibility to clear localStorage, add cookie fallback
 
-** 0.1.0 **
+**0.1.0**
 
   * initial version
 
@@ -35,3 +35,4 @@ It does not expose many hooks. Please report if you need certain ones.
 
 * add full screen mode
 * expose a jQuery api for resizing, setting row count etc.
+* add image handling like in [Adam Kiss' version](https://processwire.com/talk/topic/2277-stable-version-the-ace-editor-your-new-favorite-inputfield/?p=21948)
