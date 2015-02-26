@@ -12,7 +12,7 @@
  *
  * This module is sponsored in part by Nibiri, aka forum member Macrura
  *
- * @version 0.5.1
+ * @version 0.5.2
  *
  * @filesource
  *
@@ -241,7 +241,7 @@ class InputfieldAceExtended extends InputfieldTextarea
         return array(
             'title'    => 'Inputfield ' . self::TITLE,
             'summary'  => 'A highly configurable and flexible ACE editor input field.',
-            'version'  => '0.5.1',
+            'version'  => '0.5.2',
             'author'   => 'owzim',
             'icon'     => 'code',
             'href'     => 'https://github.com/owzim/pw-inputfield-ace-extended',
@@ -656,8 +656,8 @@ class InputfieldAceExtended extends InputfieldTextarea
         $advancedOptions->description        = $advancedDescription;
         $advancedOptions->name               = 'advancedOptions';
         $advancedOptions->value              = $advancedValue;
+        $advancedOptions->collapsed          = Inputfield::collapsedYes;
         $advancedOptions->rows               = $advancedRows;
-        $advancedOptions->collapsed          = Inputfield::collapsedNo;
         $advancedOptions->enableLocalStorage = false;
         $advancedOptions->mode               = 'json';
         $advancedOptions->optionsCollapsed   = Inputfield::collapsedHidden;
