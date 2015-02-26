@@ -12,7 +12,7 @@
  *
  * This module is sponsored in part by Nibiri, aka forum member Macrura
  *
- * @version 0.5.3
+ * @version 0.6.0
  *
  * @filesource
  *
@@ -20,6 +20,18 @@
  * @see http://raunitschka.de
  * @see http://nibiri.com
  * @see http://www.processwire.com
+ *
+ * @property int    $optionsCollapsed   The collapsed state of the options menu
+ * @property string $theme              The lowercase theme name
+ * @property string $mode               The lowercase mode name
+ * @property int    $fontSize           The font size of the editor
+ * @property string $keybinding         ace|vim|emacs
+ * @property string $fontFamily         CSS `font-family` property
+ * @property bool   $enableLocalStorage If settings from the options menu and row count should be saved in localStorage
+ * @property string $advancedOptions    A JSON string of advanced options passed as Javscript object to the edito
+ * @property array  $themes             Array of lowercase theme names, that should be selectable from the options menu
+ * @property array  $modes              Array of lowercase mode names, that should be selectable from the options menu
+ * @property array  $keybindings
  */
 
 class InputfieldAceExtended extends InputfieldTextarea
@@ -32,13 +44,24 @@ class InputfieldAceExtended extends InputfieldTextarea
     const CHECK_VALIDITY_LINK = '#ace-check-json-validity';
 
     /**
+     * A map of all keybindings
+     *
+     * @var array
+     */
+    protected static $keybindings = array(
+        'ace' => 'Ace',
+        'vim' => 'Vim',
+        'emacs' => 'Emacs',
+    );
+
+    /**
      * A map of all modes from http://ace.c9.io/build/kitchen-sink.html
      * Some `modes` do not have corresponding label, they will be converted
      * into `sentence case`
      *
      * @var array
      */
-    static $modes = array(
+    protected static $modes = array(
         'abap' => 'ABAP',
         'actionscript' => 'ActionScript',
         'ada' => 'ADA',
@@ -223,12 +246,6 @@ class InputfieldAceExtended extends InputfieldTextarea
                 'php',
                 'yaml',
             ),
-
-            'keybindings' => array(
-                'ace' => 'Ace',
-                'vim' => 'Vim',
-                'emacs' => 'Emacs',
-            ),
         );
     }
 
@@ -241,7 +258,7 @@ class InputfieldAceExtended extends InputfieldTextarea
         return array(
             'title'    => 'Inputfield ' . self::TITLE,
             'summary'  => 'A highly configurable and flexible ACE editor input field.',
-            'version'  => '0.5.3',
+            'version'  => '0.6.0',
             'author'   => 'owzim',
             'icon'     => 'code',
             'href'     => 'https://github.com/owzim/pw-inputfield-ace-extended',
@@ -288,7 +305,6 @@ class InputfieldAceExtended extends InputfieldTextarea
 
         $this->config->styles->add("{$this->cssUrl}/ace.css");
         $this->config->scripts->add("{$this->aceUrl}/ace.js");
-        $this->config->scripts->add("{$this->aceUrl}/ext-themelist.js");
         $this->config->scripts->add("{$this->jsUrl}/ace-extended.js");
 
         $options = $this->renderOptionsBar($field);
@@ -320,7 +336,7 @@ class InputfieldAceExtended extends InputfieldTextarea
      * @param  Field  $field the actual Ace field
      * @return InputfieldWrapper
      */
-    public function renderOptionsBar($field)
+    public function ___renderOptionsBar($field)
     {
         $optionsWrapper = new InputfieldWrapper();
         $markup = new InputfieldMarkup();
@@ -328,16 +344,9 @@ class InputfieldAceExtended extends InputfieldTextarea
         $markup->name = 'optionsMenu';
         $markup->icon = 'cog';
 
-        $theme = $this->getThemeOptions($field);
-        $mode = $this->getModeOptions($field);
-
-        $fontSize = $this->modules->get('InputfieldInteger');
-        $fontSize->name = 'ace-fontSize';
-        $fontSize->min = 10;
-        $fontSize->max = 28;
-        $fontSize->inputType = 'number';
-        $fontSize = $this->getOption($this->_('Font size'), $fontSize);
-
+        $theme = $this->renderThemeOptions($field);
+        $mode = $this->renderModeOptions($field);
+        $fontSize = $this->renderFontSizeInput($field);
 
         $markup->value = "{$theme}{$mode}{$fontSize}";
         $markup->collapsed = $this->getValue($field, 'optionsCollapsed');
@@ -348,14 +357,14 @@ class InputfieldAceExtended extends InputfieldTextarea
     }
 
     /**
-     * get the select input for selecting the theme
+     * Render the select input for selecting the theme
      *
      * @param  Field  $field the actual Ace field
-     * @return InputfieldSelect
+     * @return string
      *
-     * @see renderOptionsBar
+     * @see ___renderOptionsBar
      */
-    public function getThemeOptions($field)
+    public function renderThemeOptions($field)
     {
         $options = $this->modules->get('InputfieldSelect');
         $options->name = 'ace-theme';
@@ -373,7 +382,25 @@ class InputfieldAceExtended extends InputfieldTextarea
             $options->addOptions($allThemes);
         }
 
-        return $this->getOption('Theme', $options);
+        return $this->renderOptionsMenuOption('Theme', $options);
+    }
+
+    /**
+     * Render the input for selecting the font size
+     *
+     * @param  Field  $field the actual Ace field
+     * @return InputfieldSelect
+     *
+     * @see ___renderOptionsBar
+     */
+    public function renderFontSizeInput($field)
+    {
+        $fontSize = $this->modules->get('InputfieldInteger');
+        $fontSize->name = 'ace-fontSize';
+        $fontSize->min = 10;
+        $fontSize->max = 28;
+        $fontSize->inputType = 'number';
+        return $this->renderOptionsMenuOption($this->_('Font size'), $fontSize);
     }
 
     /**
@@ -395,14 +422,14 @@ class InputfieldAceExtended extends InputfieldTextarea
     }
 
     /**
-     * get the select input for selecting the programming language
+     * Render the select input for selecting the programming language
      *
      * @param  Field  $field the actual Ace field
-     * @return InputfieldSelect
+     * @return string
      *
-     * @see renderOptionsBar
+     * @see ___renderOptionsBar
      */
-    public function getModeOptions($field)
+    public function renderModeOptions($field)
     {
         $options = $this->modules->get('InputfieldSelect');
         $options->name = 'ace-mode';
@@ -419,7 +446,7 @@ class InputfieldAceExtended extends InputfieldTextarea
             $options->addOptions($allModes);
         }
 
-        return $this->getOption('Language', $options);
+        return $this->renderOptionsMenuOption('Language', $options);
     }
 
     /**
@@ -456,7 +483,7 @@ class InputfieldAceExtended extends InputfieldTextarea
      * @param  Inputfield $options
      * @return string
      */
-    protected function getOption($name, $options)
+    protected function renderOptionsMenuOption($name, $options)
     {
         $label = $this->_($name);
         $label = "<span class='ace-option-label'>$label</span>";
@@ -598,7 +625,7 @@ class InputfieldAceExtended extends InputfieldTextarea
                 'type'           => 'InputfieldSelect',
                 'name'           => 'keybinding',
                 'label'          => $this->_('Key binding'),
-                'options'        => $this->getValue($field, 'keybindings'),
+                'options'        => self::$keybindings,
                 'notes'          => $this->_('**Not** changable on editor itself'),
                 'value'          => $this->getValue($field, 'keybinding'),
                 'columnWidth'    => 33,
@@ -731,9 +758,9 @@ class InputfieldAceExtended extends InputfieldTextarea
      * @return mixed
      *
      * @see  ___render()
-     * @see  renderOptionsBar()
-     * @see  getThemeOptions()
-     * @see  getModeOptions()
+     * @see  ___renderOptionsBar()
+     * @see  renderThemeOptions()
+     * @see  renderModeOptions()
      * @see  ___getConfigInputfields()
      */
     public function getValue($field, $name)

@@ -1,5 +1,5 @@
 # Inputfield ACE Extended
-Version `0.5.x`
+Version `0.6.x`
 
 A highly configurable and flexible ACE editor input field for [ProcessWire 2.5.5](http://processwire.com/)
 
