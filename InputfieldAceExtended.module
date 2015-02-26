@@ -12,7 +12,7 @@
  *
  * This module is sponsored in part by Nibiri, aka forum member Macrura
  *
- * @version 0.6.1
+ * @version 0.7.0
  *
  * @filesource
  *
@@ -258,7 +258,7 @@ class InputfieldAceExtended extends InputfieldTextarea
         return array(
             'title'    => 'Inputfield ' . self::TITLE,
             'summary'  => 'A highly configurable and flexible ACE editor input field.',
-            'version'  => '0.6.1',
+            'version'  => '0.7.0',
             'author'   => 'owzim',
             'icon'     => 'code',
             'href'     => 'https://github.com/owzim/pw-inputfield-ace-extended',
@@ -773,9 +773,10 @@ class InputfieldAceExtended extends InputfieldTextarea
      * @see  renderModeOptions()
      * @see  ___getConfigInputfields()
      */
-    public function getValue($field, $name)
+    public function getValue($field, $name, $forceDefault = false)
     {
         $defaults = self::getDefaultConfig();
+        if ($forceDefault) return $defaults[$name];
         $value = isset($field->$name) ? $field->$name : $defaults[$name];
         return is_int($value) ? (int) $value : $value;
     }
