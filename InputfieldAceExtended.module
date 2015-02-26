@@ -12,7 +12,7 @@
  *
  * This module is sponsored in part by Nibiri, aka forum member Macrura
  *
- * @version 0.7.0
+ * @version 0.8.0
  *
  * @filesource
  *
@@ -258,7 +258,7 @@ class InputfieldAceExtended extends InputfieldTextarea
         return array(
             'title'    => 'Inputfield ' . self::TITLE,
             'summary'  => 'A highly configurable and flexible ACE editor input field.',
-            'version'  => '0.7.0',
+            'version'  => '0.8.0',
             'author'   => 'owzim',
             'icon'     => 'code',
             'href'     => 'https://github.com/owzim/pw-inputfield-ace-extended',
@@ -382,7 +382,7 @@ class InputfieldAceExtended extends InputfieldTextarea
 
 
         $selectedThemes = (array) $this->getValue($field, 'themes');
-        $allThemes = $this->getThemes();
+        $allThemes = $this->getAceComponents('theme');
 
         if (count($selectedThemes)) {
             foreach ($selectedThemes as $name) {
@@ -414,21 +414,35 @@ class InputfieldAceExtended extends InputfieldTextarea
     }
 
     /**
-     * Scan the ace folder for themes and return an assoc array
+     * Scan the ace folder for components prefixed with `$name` and return an assoc array
+     *
+     * @param  $name ext|theme|mode
      * @return array
      */
-    public function getThemes()
+    public function getAceComponents($name)
     {
-        $themes = array();
+        $components = array();
         $files = scandir($this->acePath);
+
+        $beautified = self::getStatic("{$name}s");
+
         foreach ($files as $file) {
-            if (preg_match("/^theme\-.*\.js$/", $file)) {
-                $optionsName = preg_replace("/^(theme\-)(.*)(\.js)$/", '$2', $file);
-                $themes[$optionsName] = self::name2Label($optionsName);
+            if (preg_match("/^".$name."\-.*\.js$/", $file)) {
+
+                $optionsName = preg_replace("/^(".$name."\-)(.*)(\.js)$/", '$2', $file);
+
+                if (array_key_exists($optionsName, $beautified)) {
+                    $label = $beautified[$optionsName];
+                } else {
+                    $label = self::name2Label($optionsName);
+                }
+
+                $components[$optionsName] = $label;
+
             }
         }
-        ksort($themes);
-        return $themes;
+        ksort($components);
+        return $components;
     }
 
     /**
@@ -446,7 +460,7 @@ class InputfieldAceExtended extends InputfieldTextarea
         $options->required = true;
 
         $selectedModes = (array) $this->getValue($field, 'modes');
-        $allModes = $this->getModes();
+        $allModes = $this->getAceComponents('mode');
 
         if (count($selectedModes)) {
             foreach ($selectedModes as $name) {
@@ -459,30 +473,9 @@ class InputfieldAceExtended extends InputfieldTextarea
         return $this->renderOptionsMenuOption('Language', $options);
     }
 
-    /**
-     * getModes
-     *
-     * @return array
-     */
-    public function getModes()
-    {
-        $modes = array();
-        $files = scandir($this->acePath);
-        foreach ($files as $file) {
-            if (preg_match("/^mode\-.*\.js$/", $file)) {
-                $optionsName = preg_replace("/^(mode\-)(.*)(\.js)$/", '$2', $file);
-
-                if (array_key_exists($optionsName, self::$modes)) {
-                    $label = self::$modes[$optionsName];
-                } else {
-                    $label = self::name2Label($optionsName);
-                }
-
-                $modes[$optionsName] = $label;
-            }
-        }
-        ksort($modes);
-        return $modes;
+    public static function getStatic($name) {
+        $class  = get_class();
+        return isset($class::$$name) ? $class::$$name : array();
     }
 
     /**
@@ -590,7 +583,7 @@ class InputfieldAceExtended extends InputfieldTextarea
                 'label'          => $this->_('Modes'),
                 'description'    => $this->_('Set the modes (languages) that should be selectable'),
                 'notes'          => $this->_('If none is selected, all will be selectable on editor itself'),
-                'options'        => $this->getModes(),
+                'options'        => $this->getAceComponents('mode'),
                 'value'          => $this->getValue($field, 'modes'),
             ),
             array(
@@ -599,7 +592,7 @@ class InputfieldAceExtended extends InputfieldTextarea
                 'label'          => $this->_('Themes'),
                 'description'    => $this->_('Set the themes that should be selectable'),
                 'notes'          => $this->_('If none is selected, all will be selectable on editor itself'),
-                'options'        => $this->getThemes(),
+                'options'        => $this->getAceComponents('theme'),
                 'value'          => $this->getValue($field, 'themes'),
             ),
             array(
@@ -618,7 +611,7 @@ class InputfieldAceExtended extends InputfieldTextarea
                 'name'           => 'theme',
                 'label'          => $this->_('Default theme'),
                 'notes'          => $this->_('Changable on editor itself'),
-                'options'        => $this->getThemes(),
+                'options'        => $this->getAceComponents('theme'),
                 'value'          => $this->getValue($field, 'theme'),
                 'columnWidth'    => 33,
             ),
@@ -627,7 +620,7 @@ class InputfieldAceExtended extends InputfieldTextarea
                 'name'           => 'mode',
                 'label'          => $this->_('Default mode (language)'),
                 'notes'          => $this->_('Changable on editor itself'),
-                'options'        => $this->getModes(),
+                'options'        => $this->getAceComponents('mode'),
                 'value'          => $this->getValue($field, 'mode'),
                 'columnWidth'    => 34,
             ),
@@ -646,7 +639,7 @@ class InputfieldAceExtended extends InputfieldTextarea
                 'inputType'      => 'number',
                 'label'          => $this->_('Default font size'),
                 'notes'          => $this->_('Changable on editor itself'),
-                'options'        => $this->getThemes(),
+                'options'        => $this->getAceComponents('theme'),
                 'value'          => $this->getValue($field, 'fontSize'),
                 'columnWidth'    => 33,
                 'min'            => 10,
@@ -657,7 +650,7 @@ class InputfieldAceExtended extends InputfieldTextarea
                 'name'           => 'fontFamily',
                 'label'          => $this->_('Font family'),
                 'notes'          => $this->_('**Not** changable on editor itself'),
-                'options'        => $this->getModes(),
+                'options'        => $this->getAceComponents('mode'),
                 'value'          => $this->getValue($field, 'fontFamily'),
                 'columnWidth'    => 67,
             ),
