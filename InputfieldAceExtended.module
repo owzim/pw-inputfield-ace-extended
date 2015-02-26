@@ -12,7 +12,7 @@
  *
  * This module is sponsored in part by Nibiri, aka forum member Macrura
  *
- * @version 0.9.0
+ * @version 0.10.0
  *
  * @filesource
  *
@@ -262,7 +262,7 @@ class InputfieldAceExtended extends InputfieldTextarea
         return array(
             'title'    => 'Inputfield ' . self::TITLE,
             'summary'  => 'A highly configurable and flexible ACE editor input field.',
-            'version'  => '0.9.0',
+            'version'  => '0.10.0',
             'author'   => 'owzim',
             'icon'     => 'code',
             'href'     => 'https://github.com/owzim/pw-inputfield-ace-extended',
@@ -322,16 +322,7 @@ class InputfieldAceExtended extends InputfieldTextarea
 
         $this->config->styles->add("{$this->cssUrl}/ace.css");
         $this->config->scripts->add("{$this->aceUrl}/ace.js");
-
-        // see https://github.com/ajaxorg/ace/wiki/Extensions for config
-        $extensions = $this->getValue($field, 'extensions');
-        foreach ($extensions as $extension) {
-            if (file_exists("{$this->extCoresPath}/{$extension}.js")) {
-                $this->config->scripts->add("{$this->extCoresUrl}/{$extension}.js");
-            }
-            $this->config->scripts->add("{$this->aceUrl}/ext-{$extension}.js");
-        }
-
+        $this->addExtensionScripts();
         $this->config->scripts->add("{$this->jsUrl}/ace-extended.js");
 
         $options = $this->renderOptionsBar($field);
@@ -349,6 +340,22 @@ class InputfieldAceExtended extends InputfieldTextarea
         <div data-input-class='{$this->className}' data-field-name='{$this->name}'>
             {$options}{$editor}{$textarea}
         </div>";
+    }
+
+    /**
+     * Add extension scripts
+     *
+     */
+    public function addExtensionScripts()
+    {
+        // see https://github.com/ajaxorg/ace/wiki/Extensions for config
+        $extensions = $this->getValue($field, 'extensions');
+        foreach ($extensions as $extension) {
+            if (file_exists("{$this->extCoresPath}/{$extension}.js")) {
+                $this->config->scripts->add("{$this->extCoresUrl}/{$extension}.js");
+            }
+            $this->config->scripts->add("{$this->aceUrl}/ext-{$extension}.js");
+        }
     }
 
     public function getLocalStorageID($field)
@@ -490,7 +497,8 @@ class InputfieldAceExtended extends InputfieldTextarea
         return $this->renderOptionsMenuOption('Language', $options);
     }
 
-    public static function getStatic($name) {
+    public static function getStatic($name)
+    {
         $class  = get_class();
         return isset($class::$$name) ? $class::$$name : array();
     }
