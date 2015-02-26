@@ -12,7 +12,7 @@
  *
  * This module is sponsored in part by Nibiri, aka forum member Macrura
  *
- * @version 0.8.0
+ * @version 0.9.0
  *
  * @filesource
  *
@@ -246,6 +246,10 @@ class InputfieldAceExtended extends InputfieldTextarea
                 'php',
                 'yaml',
             ),
+
+            'extensions' => array(
+                'emmet',
+            ),
         );
     }
 
@@ -258,7 +262,7 @@ class InputfieldAceExtended extends InputfieldTextarea
         return array(
             'title'    => 'Inputfield ' . self::TITLE,
             'summary'  => 'A highly configurable and flexible ACE editor input field.',
-            'version'  => '0.8.0',
+            'version'  => '0.9.0',
             'author'   => 'owzim',
             'icon'     => 'code',
             'href'     => 'https://github.com/owzim/pw-inputfield-ace-extended',
@@ -279,8 +283,12 @@ class InputfieldAceExtended extends InputfieldTextarea
         $this->path = rtrim($this->config->paths->InputfieldAceExtended, '/');
         $this->cssUrl = "{$this->url}/styles";
         $this->jsUrl = "{$this->url}/scripts";
+        $this->jsPath = "{$this->path}/scripts";
         $this->aceUrl = "{$this->url}/scripts/ace-min";
         $this->acePath = "{$this->path}/scripts/ace-min";
+
+        $this->extCoresUrl = "{$this->url}/scripts/extension-cores";
+        $this->extCoresPath = "{$this->path}/scripts/extension-cores";
 
     }
 
@@ -298,7 +306,7 @@ class InputfieldAceExtended extends InputfieldTextarea
         $field = $this->fields->get($this->name);
         // this is for non page mode, instantiated via api
         if (!$field) {
-        $field = $this;
+            $field = $this;
         }
 
 
@@ -312,9 +320,18 @@ class InputfieldAceExtended extends InputfieldTextarea
         $js['rows'] = $field->rows;
         $this->js($field->name, $js);
 
-
         $this->config->styles->add("{$this->cssUrl}/ace.css");
         $this->config->scripts->add("{$this->aceUrl}/ace.js");
+
+        // see https://github.com/ajaxorg/ace/wiki/Extensions for config
+        $extensions = $this->getValue($field, 'extensions');
+        foreach ($extensions as $extension) {
+            if (file_exists("{$this->extCoresPath}/{$extension}.js")) {
+                $this->config->scripts->add("{$this->extCoresUrl}/{$extension}.js");
+            }
+            $this->config->scripts->add("{$this->aceUrl}/ext-{$extension}.js");
+        }
+
         $this->config->scripts->add("{$this->jsUrl}/ace-extended.js");
 
         $options = $this->renderOptionsBar($field);
@@ -595,6 +612,14 @@ class InputfieldAceExtended extends InputfieldTextarea
                 'options'        => $this->getAceComponents('theme'),
                 'value'          => $this->getValue($field, 'themes'),
             ),
+            // array(
+            //     'type'           => 'InputfieldAsmSelect',
+            //     'name'           => 'extensions',
+            //     'label'          => $this->_('Extensions'),
+            //     'description'    => $this->_('Set the extensions that should be loaded'),
+            //     'options'        => $this->getAceComponents('ext'),
+            //     'value'          => $this->getValue($field, 'extensions', true),
+            // ),
             array(
                 'type'           => 'InputfieldRadios',
                 'name'           => 'optionsCollapsed',
