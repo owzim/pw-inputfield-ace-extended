@@ -41,7 +41,6 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
         this.setAll = function(values) {
             return localStorage.setItem(this.namespace, JSON.stringify(values));
         };
-
     };
 
     /**
@@ -62,8 +61,6 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
     Storage.has = function(namespace) {
         return localStorage.getItem(namespace) ? true : false;
     };
-
-
 
     var INPUT_FIELD_CLASS = 'InputfieldAceExtended';
 
@@ -119,30 +116,7 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
                 },
 
                 getLineHeight: function(realHeight) {
-
                     return editor.renderer.lineHeight;
-
-                    // var $line = $editor.find('.ace_line');
-                    // setInterval(function() {
-                    //     console.log($line.height());
-
-                    // },1000);
-
-                    window.fff = function() {
-                        return editor.renderer.lineHeight;
-                    }
-
-                    return 10;
-
-                    // console.log('editor.container.style.lineHeight', );
-                    console.log('editor.renderer.lineHeight', editor.renderer.lineHeight);
-                    // this fixes a rounding issue on firefox
-                    // if (typeof window.getComputedStyle !== "undefined") {
-                        // return parseFloat(window.getComputedStyle($line[0]).height);
-                    // } else {
-                        // return $line.height();
-                    // }
-
                 },
 
                 ucFirst: function(str) {
@@ -474,7 +448,7 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
                     if (!isInit && $fieldWrapper.hasClass(INPUT_FIELD_COLLAPSED_CLASS)) {
                         // hack with timeout to init after the collapse animattion has
                         // finished, I wish there was a better way
-                        $aceField.css({ opacity: 0 });
+                        $aceField.css({ opacity: 0, transition: 'opacity 0.3s ease' });
 
                         setTimeout(function()  {
                             $aceField.css({ opacity: 1 });
