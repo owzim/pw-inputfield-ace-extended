@@ -12,7 +12,7 @@
  *
  * This module is sponsored in part by Nibiri, aka forum member Macrura
  *
- * @version 0.5.0
+ * @version 0.5.1
  *
  * @filesource
  *
@@ -197,18 +197,17 @@ class InputfieldAceExtended extends InputfieldTextarea
     {
 
         return array(
-            'theme'         => 'tomorrow',
-            'mode'          => 'plain_text',
-            'fontSize'      => 16,
-            'fontFamily'    => 'Monaco, Menlo, "Ubuntu Mono", Consolas, "source-code-pro", monospace',
-            'keybinding'    => 'ace',
-            'showGutter'    => true,
-            'scrollPastEnd' => true,
-            'softTab'       => true,
+            'optionsCollapsed'   => Inputfield::collapsedYes,
+            'theme'              => 'tomorrow',
+            'mode'               => 'plain_text',
+            'fontSize'           => 14,
+            'keybinding'         => 'ace',
+            'fontFamily'         => 'Monaco, Menlo, "Ubuntu Mono", Consolas, "source-code-pro", monospace',
+            'enableLocalStorage' => true,
+            'advancedOptions'    => file_get_contents(__DIR__ . '/advanced-options.json'),
 
             'themes' => array(
                 'tomorrow',
-
                 'chrome',
                 'monokai',
                 'twilight',
@@ -216,7 +215,6 @@ class InputfieldAceExtended extends InputfieldTextarea
 
             'modes' => array(
                 'plain_text',
-
                 'css',
                 'html',
                 'javascript',
@@ -231,11 +229,6 @@ class InputfieldAceExtended extends InputfieldTextarea
                 'vim' => 'Vim',
                 'emacs' => 'Emacs',
             ),
-
-            'enableLocalStorage' => true,
-
-            'optionsCollapsed' => Inputfield::collapsedYes,
-            'advancedOptions' => file_get_contents(__DIR__ . '/advanced-options.json'),
         );
     }
 
@@ -248,7 +241,7 @@ class InputfieldAceExtended extends InputfieldTextarea
         return array(
             'title'    => 'Inputfield ' . self::TITLE,
             'summary'  => 'A highly configurable and flexible ACE editor input field.',
-            'version'  => '0.5.0',
+            'version'  => '0.5.1',
             'author'   => 'owzim',
             'icon'     => 'code',
             'href'     => 'https://github.com/owzim/pw-inputfield-ace-extended',
@@ -659,17 +652,16 @@ class InputfieldAceExtended extends InputfieldTextarea
 
         $advancedOptions = $this->modules->get('InputfieldAceExtended');
 
-        $advancedOptions->label = $this->_('Advanced options');
-        $advancedOptions->description = $advancedDescription;
-        $advancedOptions->name = 'advancedOptions';
-        $advancedOptions->value = $advancedValue;
-        $advancedOptions->rows = $advancedRows;
-        $advancedOptions->collapsed = Inputfield::collapsedNo;
+        $advancedOptions->label              = $this->_('Advanced options');
+        $advancedOptions->description        = $advancedDescription;
+        $advancedOptions->name               = 'advancedOptions';
+        $advancedOptions->value              = $advancedValue;
+        $advancedOptions->rows               = $advancedRows;
+        $advancedOptions->collapsed          = Inputfield::collapsedNo;
         $advancedOptions->enableLocalStorage = false;
-        $advancedOptions->mode = 'json';
-        $advancedOptions->fontSize = 14;
-        $advancedOptions->optionsCollapsed = Inputfield::collapsedHidden;
-        $advancedOptions->theme = 'tomorrow';
+        $advancedOptions->mode               = 'json';
+        $advancedOptions->optionsCollapsed   = Inputfield::collapsedHidden;
+        $advancedOptions->theme              = 'tomorrow';
 
         $advancedOptions->setAdvancedOptions(array(
             'highlightActiveLine' => false,

@@ -1,5 +1,5 @@
 # Inputfield ACE Extended
-Version `0.4.x`
+Version `0.5.x`
 
 A highly configurable and flexible ACE editor input field for [ProcessWire 2.5.5](http://processwire.com/)
 
@@ -15,21 +15,18 @@ It does not expose many hooks. Please report if you need certain ones.
 
 ## Changelog
 
-**0.4.0**
 
-  * move advanced options into one dimensional hash, rather that in sub objects like `editor`, 'session' etc.
+**0.5.x**
 
-**0.3.0**
+* enable field to be instantiated via `API`
+* add interval check on `editor.renderer.lineHeight` and only initalize everything via callback when it is available
+* add option to enable/disable `localStorage`
+* make `advancedOptions` use the the Inputfield itself, INCEPTION!
 
-  * add possiblity to apply advanced options via json string in a separate field setting
-
-**0.2.0**
-
-  * add possibility to clear localStorage, add cookie fallback
-
-**0.1.0**
-
-  * initial version
+**0.4.x** move advanced options into one dimensional hash, rather that in sub objects like `editor`, 'session' etc.
+**0.3.x** add possiblity to apply advanced options via json string in a separate field setting
+**0.2.x** add possibility to clear localStorage, add cookie fallback
+**0.1.0** initial version
 
 ## Roadmap
 
