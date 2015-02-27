@@ -7,11 +7,29 @@ This module is sponsored in part by [Nibiri](http://nibiri.com/), aka forum memb
 
 See this short [Screencast](https://www.youtube.com/watch?v=4Ajiako70iY) to get an overview.
 
-## Limitations & known issues
+## Usage via API
 
-You cannot inatantiate the Inputfield as of now via `$this->modules->get('InputfieldAceExtended')`, this will be fixed soon.
+```PHP
+$ace = $modules->get('InputfieldAceExtended');
 
-It does not expose many hooks. Please report if you need certain ones.
+$ace->label              = 'An ACE Field';
+$ace->name               = 'ace';
+$ace->value              = json_encode($someArray, JSON_PRETTY_PRINT);
+$ace->collapsed          = Inputfield::collapsedYes;
+$ace->rows               = 10;
+$ace->enableLocalStorage = false;
+$ace->mode               = 'json';
+$ace->optionsCollapsed   = Inputfield::collapsedHidden;
+$ace->theme              = 'tomorrow';
+
+$ace->setAdvancedOptions(array(
+    'highlightActiveLine' => false,
+    'showLineNumbers'     => false,
+    'showGutter'          => false,
+    'tabSize'             => 2,
+    'printMarginColumn'   => false,
+));
+```
 
 ## Changelog
 
