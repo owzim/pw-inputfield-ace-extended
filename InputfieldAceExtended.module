@@ -12,7 +12,7 @@
  *
  * This module is sponsored in part by Nibiri, aka forum member Macrura
  *
- * @version 0.10.2
+ * @version 0.11.0
  *
  * @filesource
  *
@@ -262,7 +262,7 @@ class InputfieldAceExtended extends InputfieldTextarea
         return array(
             'title'    => 'Inputfield ' . self::TITLE,
             'summary'  => 'A highly configurable and flexible ACE editor input field.',
-            'version'  => '0.10.2',
+            'version'  => '0.11.0',
             'author'   => 'owzim',
             'icon'     => 'code',
             'href'     => 'https://github.com/owzim/pw-inputfield-ace-extended',
@@ -284,8 +284,8 @@ class InputfieldAceExtended extends InputfieldTextarea
         $this->cssUrl = "{$this->url}/styles";
         $this->jsUrl = "{$this->url}/scripts";
         $this->jsPath = "{$this->path}/scripts";
-        $this->aceUrl = "{$this->url}/scripts/ace-min";
-        $this->acePath = "{$this->path}/scripts/ace-min";
+        $this->aceUrl = "{$this->url}/scripts/ace-min-noconflict";
+        $this->acePath = "{$this->path}/scripts/ace-min-noconflict";
 
         $this->extCoresUrl = "{$this->url}/scripts/extension-cores";
         $this->extCoresPath = "{$this->path}/scripts/extension-cores";
