@@ -12,7 +12,7 @@
  *
  * This module is sponsored in part by Nibiri, aka forum member Macrura
  *
- * @version 0.11.0
+ * @version 0.12.0
  *
  * @filesource
  *
@@ -28,7 +28,8 @@
  * @property string $keybinding         ace|vim|emacs
  * @property string $fontFamily         CSS `font-family` property
  * @property bool   $enableLocalStorage If settings from the options menu and row count should be saved in localStorage
- * @property string $advancedOptions    A JSON string of advanced options passed as Javscript object to the edito
+ * @property string $advancedOptions    A JSON string of advanced options passed as Javscript object to the editor
+ * @property string $extensionsOptions  A JSON string of extensions options passed as Javscript object to the editor
  * @property array  $themes             Array of lowercase theme names, that should be selectable from the options menu
  * @property array  $modes              Array of lowercase mode names, that should be selectable from the options menu
  * @property array  $keybindings
@@ -214,12 +215,11 @@ class InputfieldAceExtended extends InputfieldTextarea
      * default config
      * @return array
      *
-     * @see  getValue()
      */
     public static function getDefaultConfig()
     {
-
         return array(
+            'rows'               => 10,
             'optionsCollapsed'   => Inputfield::collapsedYes,
             'theme'              => 'tomorrow',
             'mode'               => 'plain_text',
@@ -227,8 +227,8 @@ class InputfieldAceExtended extends InputfieldTextarea
             'keybinding'         => 'ace',
             'fontFamily'         => 'Monaco, Menlo, "Ubuntu Mono", Consolas, "source-code-pro", monospace',
             'enableLocalStorage' => true,
-            'advancedOptions'    => file_get_contents(__DIR__ . '/advanced-options.json'),
-            'extensionsOptions'   => file_get_contents(__DIR__ . '/extensions-options.json'),
+            'advancedOptions'    => trim(file_get_contents(__DIR__ . '/advanced-options.json')),
+            'extensionsOptions'  => trim(file_get_contents(__DIR__ . '/extensions-options.json')),
 
             'themes' => array(
                 'tomorrow',
@@ -263,14 +263,22 @@ class InputfieldAceExtended extends InputfieldTextarea
         return array(
             'title'    => 'Inputfield ' . self::TITLE,
             'summary'  => 'A highly configurable and flexible ACE editor input field.',
-            'version'  => '0.11.0',
+            'version'  => '0.12.0',
             'author'   => 'owzim',
             'icon'     => 'code',
             'href'     => 'https://github.com/owzim/pw-inputfield-ace-extended',
             'autoload' => false,
-            // PW 2.5.5 for new module/form configs
             'requires' => array('PHP>=5.4','ProcessWire>=2.5.5'),
         );
+    }
+
+    public function __construct()
+    {
+        parent::__construct();
+        $defaultConfig = self::getDefaultConfig();
+        foreach ($defaultConfig as $key => $value) {
+            $this->set($key, $value);
+        }
     }
 
     /**
@@ -290,7 +298,6 @@ class InputfieldAceExtended extends InputfieldTextarea
 
         $this->extCoresUrl = "{$this->url}/scripts/extension-cores";
         $this->extCoresPath = "{$this->path}/scripts/extension-cores";
-
     }
 
     /**
@@ -299,36 +306,24 @@ class InputfieldAceExtended extends InputfieldTextarea
      */
     public function ___render()
     {
-        // this is weird
-        // differentiate between page and api mode, otherwise the field settings
-        // are not retrieved correctly
-        //
-        // this is for page mode
-        $field = $this->fields->get($this->name);
-        // this is for non page mode, instantiated via api
-        if (!$field) {
-            $field = $this;
-        }
-
-
         $defaultConfig = self::getDefaultConfig();
 
         // populate the js config with all the field settings
         $js = array();
         foreach ($defaultConfig as $name => $value) {
-            $js[$name] = $this->getValue($field, $name);
+            $js[$name] = $this->$name;
         }
-        $js['rows'] = $field->rows;
-        $this->js($field->name, $js);
+        $js['rows'] = $this->rows;
+        $this->js($this->name, $js);
 
         $this->config->styles->add("{$this->cssUrl}/ace.css");
         $this->config->scripts->add("{$this->aceUrl}/ace.js");
         $this->addExtensionScripts();
         $this->config->scripts->add("{$this->jsUrl}/ace-extended.js");
 
-        $options = $this->renderOptionsBar($field);
+        $options = $this->renderOptionsBar();
 
-        $id = $this->getLocalStorageID($field);
+        $id = $this->getLocalStorageID();
 
         $textarea = parent::___render();
 
@@ -350,7 +345,7 @@ class InputfieldAceExtended extends InputfieldTextarea
     public function addExtensionScripts()
     {
         // see https://github.com/ajaxorg/ace/wiki/Extensions for config
-        $extensions = $this->getValue($field, 'extensions');
+        $extensions = $this->extensions;
         foreach ($extensions as $extension) {
             if (file_exists("{$this->extCoresPath}/{$extension}.js")) {
                 $this->config->scripts->add("{$this->extCoresUrl}/{$extension}.js");
@@ -359,9 +354,9 @@ class InputfieldAceExtended extends InputfieldTextarea
         }
     }
 
-    public function getLocalStorageID($field)
+    public function getLocalStorageID()
     {
-        return "{$this->className}_{$field->name}_editor";
+        return "{$this->className}_{$this->name}_editor";
     }
 
     /**
@@ -371,7 +366,7 @@ class InputfieldAceExtended extends InputfieldTextarea
      * @param  Field  $field the actual Ace field
      * @return InputfieldWrapper
      */
-    public function ___renderOptionsBar($field)
+    public function ___renderOptionsBar()
     {
         $optionsWrapper = new InputfieldWrapper();
         $markup = new InputfieldMarkup();
@@ -379,12 +374,12 @@ class InputfieldAceExtended extends InputfieldTextarea
         $markup->name = 'optionsMenu';
         $markup->icon = 'cog';
 
-        $theme = $this->renderThemeOptions($field);
-        $mode = $this->renderModeOptions($field);
-        $fontSize = $this->renderFontSizeInput($field);
+        $theme = $this->renderThemeOptions();
+        $mode = $this->renderModeOptions();
+        $fontSize = $this->renderFontSizeInput();
 
         $markup->value = "{$theme}{$mode}{$fontSize}";
-        $markup->collapsed = $this->getValue($field, 'optionsCollapsed');
+        $markup->collapsed = $this->optionsCollapsed;
 
         $optionsWrapper->append($markup);
 
@@ -399,14 +394,14 @@ class InputfieldAceExtended extends InputfieldTextarea
      *
      * @see ___renderOptionsBar
      */
-    public function renderThemeOptions($field)
+    public function renderThemeOptions()
     {
         $options = $this->modules->get('InputfieldSelect');
         $options->name = 'ace-theme';
         $options->required = true;
 
 
-        $selectedThemes = (array) $this->getValue($field, 'themes');
+        $selectedThemes = (array) $this->themes;
         $allThemes = $this->getAceComponents('theme');
 
         if (count($selectedThemes)) {
@@ -428,13 +423,14 @@ class InputfieldAceExtended extends InputfieldTextarea
      *
      * @see ___renderOptionsBar
      */
-    public function renderFontSizeInput($field)
+    public function renderFontSizeInput()
     {
         $fontSize = $this->modules->get('InputfieldInteger');
         $fontSize->name = 'ace-fontSize';
         $fontSize->min = 10;
         $fontSize->max = 28;
         $fontSize->inputType = 'number';
+        $fontSize->value = $this->fontSize;
         return $this->renderOptionsMenuOption($this->_('Font size'), $fontSize);
     }
 
@@ -478,13 +474,13 @@ class InputfieldAceExtended extends InputfieldTextarea
      *
      * @see ___renderOptionsBar
      */
-    public function renderModeOptions($field)
+    public function renderModeOptions()
     {
         $options = $this->modules->get('InputfieldSelect');
         $options->name = 'ace-mode';
         $options->required = true;
 
-        $selectedModes = (array) $this->getValue($field, 'modes');
+        $selectedModes = (array) $this->modes;
         $allModes = $this->getAceComponents('mode');
 
         if (count($selectedModes)) {
@@ -568,18 +564,15 @@ class InputfieldAceExtended extends InputfieldTextarea
         return $js[$key];
     }
 
-
     /**
      * getConfigInputfields
      *
-     * @param  Field  $field
+     * @param  Field
      * @return InputfieldWrapper
      */
     public function ___getConfigInputfields()
     {
         $this->config->scripts->add("{$this->jsUrl}/ace-extended.js");
-
-        $field = $this->getField();
 
         $inputfields = parent::___getConfigInputfields();
 
@@ -588,7 +581,7 @@ class InputfieldAceExtended extends InputfieldTextarea
 
         $button = $this->modules->get('InputfieldButton');
         $button->value = $this->_('Clear Local Storage');
-        $button->attr('data-' . self::CLEAR_LOCAL_STORAGE_DATA_KEY, $this->getLocalStorageID($field));
+        $button->attr('data-' . self::CLEAR_LOCAL_STORAGE_DATA_KEY, $this->getLocalStorageID());
         $button->attr('id', self::CLEAR_LOCAL_STORAGE_BUTTON_ID);
         $button->icon = 'eraser';
 
@@ -610,7 +603,7 @@ class InputfieldAceExtended extends InputfieldTextarea
                 'description'    => $this->_('Set the modes (languages) that should be selectable'),
                 'notes'          => $this->_('If none is selected, all will be selectable on editor itself'),
                 'options'        => $this->getAceComponents('mode'),
-                'value'          => $this->getValue($field, 'modes'),
+                'value'          => $this->modes,
             ),
             array(
                 'type'           => 'InputfieldAsmSelect',
@@ -619,16 +612,16 @@ class InputfieldAceExtended extends InputfieldTextarea
                 'description'    => $this->_('Set the themes that should be selectable'),
                 'notes'          => $this->_('If none is selected, all will be selectable on editor itself'),
                 'options'        => $this->getAceComponents('theme'),
-                'value'          => $this->getValue($field, 'themes'),
+                'value'          => $this->themes,
             ),
-            // array(
-            //     'type'           => 'InputfieldAsmSelect',
-            //     'name'           => 'extensions',
-            //     'label'          => $this->_('Extensions'),
-            //     'description'    => $this->_('Set the extensions that should be loaded'),
-            //     'options'        => $this->getAceComponents('ext'),
-            //     'value'          => $this->getValue($field, 'extensions', true),
-            // ),
+            array(
+                'type'           => 'InputfieldAsmSelect',
+                'name'           => 'extensions',
+                'label'          => $this->_('Extensions'),
+                'description'    => $this->_('Set the extensions that should be loaded'),
+                'options'        => $this->getAceComponents('ext'),
+                'value'          => $this->extensions,
+            ),
             array(
                 'type'           => 'InputfieldRadios',
                 'name'           => 'optionsCollapsed',
@@ -638,7 +631,7 @@ class InputfieldAceExtended extends InputfieldTextarea
                     Inputfield::collapsedYes => $this->_('Always collapsed, requiring a click to open (default)'),
                     Inputfield::collapsedHidden => $this->_('Hidden, not shown in the editor'),
                 ),
-                'value'          => $this->getValue($field, 'optionsCollapsed'),
+                'value'          => $this->optionsCollapsed,
             ),
             array(
                 'type'           => 'InputfieldSelect',
@@ -646,7 +639,7 @@ class InputfieldAceExtended extends InputfieldTextarea
                 'label'          => $this->_('Default theme'),
                 'notes'          => $this->_('Changable on editor itself'),
                 'options'        => $this->getAceComponents('theme'),
-                'value'          => $this->getValue($field, 'theme'),
+                'value'          => $this->theme,
                 'columnWidth'    => 33,
             ),
             array(
@@ -655,7 +648,7 @@ class InputfieldAceExtended extends InputfieldTextarea
                 'label'          => $this->_('Default mode (language)'),
                 'notes'          => $this->_('Changable on editor itself'),
                 'options'        => $this->getAceComponents('mode'),
-                'value'          => $this->getValue($field, 'mode'),
+                'value'          => $this->mode,
                 'columnWidth'    => 34,
             ),
             array(
@@ -664,7 +657,7 @@ class InputfieldAceExtended extends InputfieldTextarea
                 'label'          => $this->_('Key binding'),
                 'options'        => self::$keybindings,
                 'notes'          => $this->_('**Not** changable on editor itself'),
-                'value'          => $this->getValue($field, 'keybinding'),
+                'value'          => $this->keybinding,
                 'columnWidth'    => 33,
             ),
             array(
@@ -674,7 +667,7 @@ class InputfieldAceExtended extends InputfieldTextarea
                 'label'          => $this->_('Default font size'),
                 'notes'          => $this->_('Changable on editor itself'),
                 'options'        => $this->getAceComponents('theme'),
-                'value'          => $this->getValue($field, 'fontSize'),
+                'value'          => $this->fontSize,
                 'columnWidth'    => 33,
                 'min'            => 10,
                 'max'            => 28,
@@ -685,13 +678,13 @@ class InputfieldAceExtended extends InputfieldTextarea
                 'label'          => $this->_('Font family'),
                 'notes'          => $this->_('**Not** changable on editor itself'),
                 'options'        => $this->getAceComponents('mode'),
-                'value'          => $this->getValue($field, 'fontFamily'),
+                'value'          => $this->fontFamily,
                 'columnWidth'    => 67,
             ),
         );
 
         $wrapper->add($fields);
-        $this->addJSONOptionsInputfields($field, $wrapper);
+        $this->addJSONOptionsInputfields($wrapper);
 
         $inputfields->append($wrapper);
 
@@ -703,31 +696,39 @@ class InputfieldAceExtended extends InputfieldTextarea
      *
      * @param InputfieldFieldset $wrapper
      */
-    public function addJSONOptionsInputfields($field, $wrapper)
+    public function addJSONOptionsInputfields($wrapper)
     {
         $fields = array(
-            'advancedOptions' => $this->_('Advanced options'),
-            'extensionsOptions' => $this->_('Extensions options'),
+            'advancedOptions' => array(
+                'label' => $this->_('Advanced options'),
+                'description' => sprintf(
+                    $this->_('Please refer to the [Configuration Reference](%s). Must be valid JSON, [check now](%s) for validity.'),
+                    'https://github.com/ajaxorg/ace/wiki/Configuring-Ace',
+                    str_replace("{name}", 'advancedOptions', self::CHECK_VALIDITY_LINK)
+                ),
+            ),
+            'extensionsOptions' => array(
+                'label' => $this->_('Extensions options'),
+                'description' => sprintf(
+                    $this->_('Please refer to the documentation of each extension. See two examples [here](%s). Must be valid JSON, [check now](%s) for validity.'),
+                    'https://github.com/ajaxorg/ace/wiki/Extensions',
+                    str_replace("{name}", 'extensionsOptions', self::CHECK_VALIDITY_LINK)
+                ),
+            ),
         );
-        foreach ($fields as $name => $label) {
-            $description = sprintf(
-                $this->_('Please refer to the [Configuration Reference](%s). Must be valid JSON, [check now](%s) for validity.'),
-                'https://github.com/ajaxorg/ace/wiki/Configuring-Ace',
-                str_replace("{name}", $name, self::CHECK_VALIDITY_LINK)
-            );
+        foreach ($fields as $name => $settings) {
 
-            $value = $this->getValue($field, $name);
+            $value = $this->$name;
             $rows = count(preg_split('/\n|\r/', $value));
 
             $options = $this->modules->get('InputfieldAceExtended');
 
-            $options->label              = $label;
-            $options->description        = $description;
+            $options->label              = $settings['label'];
+            $options->description        = $settings['description'];
             $options->name               = $name;
             $options->value              = $value;
-            // $options->collapsed          = Inputfield::collapsedYes;
-            $options->collapsed          = Inputfield::collapsedNo;
-            $options->rows               = $rows;
+            $options->collapsed          = Inputfield::collapsedYes;
+            $options->rows               = $rows + 1;
             $options->enableLocalStorage = false;
             $options->mode               = 'json';
             $options->optionsCollapsed   = Inputfield::collapsedHidden;
@@ -743,8 +744,6 @@ class InputfieldAceExtended extends InputfieldTextarea
 
             $wrapper->add($options);
         }
-
-
     }
 
     /**
@@ -754,7 +753,7 @@ class InputfieldAceExtended extends InputfieldTextarea
      */
     public function getAdvancedOptions()
     {
-        return json_decode($this->getValue($this, 'advancedOptions'));
+        return json_decode($this->advancedOptions);
     }
 
     /**
@@ -778,7 +777,7 @@ class InputfieldAceExtended extends InputfieldTextarea
      */
     public function getExtensionOptions()
     {
-        return json_decode($this->getValue($this, 'extensionsOptions'));
+        return json_decode($this->extensionsOptions);
     }
 
     /**
@@ -793,40 +792,5 @@ class InputfieldAceExtended extends InputfieldTextarea
             $extensionsOptions->$name = $value;
         }
         $this->extensionsOptions = json_encode($extensionsOptions);
-    }
-
-    /**
-     * Get a field setting by `$name` or the default, if not defined.
-     *
-     * @param  Field  $field
-     * @param  string $name
-     * @return mixed
-     *
-     * @see  ___render()
-     * @see  ___renderOptionsBar()
-     * @see  renderThemeOptions()
-     * @see  renderModeOptions()
-     * @see  ___getConfigInputfields()
-     */
-    public function getValue($field, $name, $forceDefault = false)
-    {
-        $defaults = self::getDefaultConfig();
-        if ($forceDefault) return $defaults[$name];
-        $value = isset($field->$name) ? $field->$name : $defaults[$name];
-        return is_int($value) ? (int) $value : $value;
-    }
-
-
-    protected function getField()
-    {
-        // differentiate between page and api mode, otherwise the field settings
-        // are not retrieved correctly
-
-        // this is for page mode
-        $field = $this->fields->get($this->name);
-        // this is for non page mode, instantiated via api
-        if (!$field) {
-            $field = $this;
-        }
     }
 }

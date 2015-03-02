@@ -1,5 +1,5 @@
 # Inputfield ACE Extended
-Version `0.11.x`
+Version `0.12.x`
 
 A highly configurable and flexible ACE editor input field for [ProcessWire 2.5.5](http://processwire.com/)
 
@@ -29,10 +29,13 @@ $ace->setAdvancedOptions(array(
     'tabSize'             => 2,
     'printMarginColumn'   => false,
 ));
+
+$ace->setExtensionOptions(array(
+    'enableEmmet' => true
+));
 ```
 
 ## Changelog
-
 
 **0.5.x**
 

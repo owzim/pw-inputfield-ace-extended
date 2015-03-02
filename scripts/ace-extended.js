@@ -166,14 +166,15 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
                 $textarea.val(editor.getValue());
             });
 
-            var advancedOptions = {};
-            try {
-                advancedOptions = JSON.parse(config.advancedOptions);
-            } catch (e) {
-                console && console.warn ? console.warn(e) : '';
-            }
-
-            helper.setOptions(advancedOptions);
+            $.each(['advancedOptions','extensionsOptions'], function(index, name) {
+                var additonalOptions = {};
+                try {
+                    additonalOptions = JSON.parse(config[name]);
+                } catch (e) {
+                    console && console.warn ? console.warn(e) : '';
+                }
+                helper.setOptions(additonalOptions);
+            });
 
             $.each(['theme','mode','fontSize','rows', 'fontFamily', 'keybinding'], function(index, name) {
 
