@@ -41,7 +41,7 @@ class InputfieldAceExtended extends InputfieldTextarea
 
     const CLEAR_LOCAL_STORAGE_DATA_KEY = 'clear-local-storage';
     const CLEAR_LOCAL_STORAGE_BUTTON_ID = 'ace-clear-local-storage';
-    const CHECK_VALIDITY_LINK = '#ace-check-json-validity';
+    const CHECK_VALIDITY_LINK = '#ace-check-json-validity-for-{name}';
 
     /**
      * A map of all keybindings
@@ -62,125 +62,125 @@ class InputfieldAceExtended extends InputfieldTextarea
      * @var array
      */
     protected static $modes = array(
-        'abap' => 'ABAP',
+        'abap'         => 'ABAP',
         'actionscript' => 'ActionScript',
-        'ada' => 'ADA',
-        'apache_conf' => 'Apache Conf',
-        'asciidoc' => 'AsciiDoc',
+        'ada'          => 'ADA',
+        'apache_conf'  => 'Apache Conf',
+        'asciidoc'     => 'AsciiDoc',
         'assembly_x86' => 'Assembly x86',
-        'autohotkey' => 'AutoHotKey',
-        'batchfile' => 'BatchFile',
-        'c9search' => 'C9Search',
-        'c_cpp' => 'C and C++',
-        'cirru' => 'Cirru',
-        'clojure' => 'Clojure',
-        'cobol' => 'Cobol',
-        'coffee' => 'CoffeeScript',
-        'coldfusion' => 'ColdFusion',
-        'csharp' => 'C#',
-        'css' => 'CSS',
-        'curly' => 'Curly',
-        'd' => 'D',
-        'dart' => 'Dart',
-        'diff' => 'Diff',
-        'dockerfile' => 'Dockerfile',
-        'dot' => 'Dot',
-        'dummy' => 'Dummy',
-        'dummysyntax' => 'DummySyntax',
-        'eiffel' => 'Eiffel',
-        'ejs' => 'EJS',
-        'elixir' => 'Elixir',
-        'elm' => 'Elm',
-        'erlang' => 'Erlang',
-        'forth' => 'Forth',
-        'ftl' => 'FreeMarker',
-        'gcode' => 'Gcode',
-        'gherkin' => 'Gherkin',
-        'gitignore' => 'Gitignore',
-        'glsl' => 'Glsl',
-        'golang' => 'Go',
-        'groovy' => 'Groovy',
-        'haml' => 'HAML',
-        'handlebars' => 'Handlebars',
-        'haskell' => 'Haskell',
-        'haxe' => 'haXe',
-        'html' => 'HTML',
-        'html_ruby' => 'HTML (Ruby)',
-        'ini' => 'INI',
-        'io' => 'Io',
-        'jack' => 'Jack',
-        'jade' => 'Jade',
-        'java' => 'Java',
-        'javascript' => 'JavaScript',
-        'json' => 'JSON',
-        'jsoniq' => 'JSONiq',
-        'jsp' => 'JSP',
-        'jsx' => 'JSX',
-        'julia' => 'Julia',
-        'latex' => 'LaTeX',
-        'less' => 'LESS',
-        'liquid' => 'Liquid',
-        'lisp' => 'Lisp',
-        'livescript' => 'LiveScript',
-        'logiql' => 'LogiQL',
-        'lsl' => 'LSL',
-        'lua' => 'Lua',
-        'luapage' => 'LuaPage',
-        'lucene' => 'Lucene',
-        'makefile' => 'Makefile',
-        'markdown' => 'Markdown',
-        'mask' => 'Mask',
-        'matlab' => 'MATLAB',
-        'mel' => 'MEL',
-        'mushcode' => 'MUSHCode',
-        'mysql' => 'MySQL',
-        'nix' => 'Nix',
-        'objectivec' => 'Objective-C',
-        'ocaml' => 'OCaml',
-        'pascal' => 'Pascal',
-        'perl' => 'Perl',
-        'pgsql' => 'pgSQL',
-        'php' => 'PHP',
-        'powershell' => 'Powershell',
-        'praat' => 'Praat',
-        'prolog' => 'Prolog',
-        'properties' => 'Properties',
-        'protobuf' => 'Protobuf',
-        'python' => 'Python',
-        'r' => 'R',
-        'rdoc' => 'RDoc',
-        'rhtml' => 'RHTML',
-        'ruby' => 'Ruby',
-        'rust' => 'Rust',
-        'sass' => 'SASS',
-        'scad' => 'SCAD',
-        'scala' => 'Scala',
-        'scheme' => 'Scheme',
-        'scss' => 'SCSS',
-        'sh' => 'SH',
-        'sjs' => 'SJS',
-        'smarty' => 'Smarty',
-        'snippets' => 'snippets',
+        'autohotkey'   => 'AutoHotKey',
+        'batchfile'    => 'BatchFile',
+        'c9search'     => 'C9Search',
+        'c_cpp'        => 'C and C++',
+        'cirru'        => 'Cirru',
+        'clojure'      => 'Clojure',
+        'cobol'        => 'Cobol',
+        'coffee'       => 'CoffeeScript',
+        'coldfusion'   => 'ColdFusion',
+        'csharp'       => 'C#',
+        'css'          => 'CSS',
+        'curly'        => 'Curly',
+        'd'            => 'D',
+        'dart'         => 'Dart',
+        'diff'         => 'Diff',
+        'dockerfile'   => 'Dockerfile',
+        'dot'          => 'Dot',
+        'dummy'        => 'Dummy',
+        'dummysyntax'  => 'DummySyntax',
+        'eiffel'       => 'Eiffel',
+        'ejs'          => 'EJS',
+        'elixir'       => 'Elixir',
+        'elm'          => 'Elm',
+        'erlang'       => 'Erlang',
+        'forth'        => 'Forth',
+        'ftl'          => 'FreeMarker',
+        'gcode'        => 'Gcode',
+        'gherkin'      => 'Gherkin',
+        'gitignore'    => 'Gitignore',
+        'glsl'         => 'Glsl',
+        'golang'       => 'Go',
+        'groovy'       => 'Groovy',
+        'haml'         => 'HAML',
+        'handlebars'   => 'Handlebars',
+        'haskell'      => 'Haskell',
+        'haxe'         => 'haXe',
+        'html'         => 'HTML',
+        'html_ruby'    => 'HTML (Ruby)',
+        'ini'          => 'INI',
+        'io'           => 'Io',
+        'jack'         => 'Jack',
+        'jade'         => 'Jade',
+        'java'         => 'Java',
+        'javascript'   => 'JavaScript',
+        'json'         => 'JSON',
+        'jsoniq'       => 'JSONiq',
+        'jsp'          => 'JSP',
+        'jsx'          => 'JSX',
+        'julia'        => 'Julia',
+        'latex'        => 'LaTeX',
+        'less'         => 'LESS',
+        'liquid'       => 'Liquid',
+        'lisp'         => 'Lisp',
+        'livescript'   => 'LiveScript',
+        'logiql'       => 'LogiQL',
+        'lsl'          => 'LSL',
+        'lua'          => 'Lua',
+        'luapage'      => 'LuaPage',
+        'lucene'       => 'Lucene',
+        'makefile'     => 'Makefile',
+        'markdown'     => 'Markdown',
+        'mask'         => 'Mask',
+        'matlab'       => 'MATLAB',
+        'mel'          => 'MEL',
+        'mushcode'     => 'MUSHCode',
+        'mysql'        => 'MySQL',
+        'nix'          => 'Nix',
+        'objectivec'   => 'Objective-C',
+        'ocaml'        => 'OCaml',
+        'pascal'       => 'Pascal',
+        'perl'         => 'Perl',
+        'pgsql'        => 'pgSQL',
+        'php'          => 'PHP',
+        'powershell'   => 'Powershell',
+        'praat'        => 'Praat',
+        'prolog'       => 'Prolog',
+        'properties'   => 'Properties',
+        'protobuf'     => 'Protobuf',
+        'python'       => 'Python',
+        'r'            => 'R',
+        'rdoc'         => 'RDoc',
+        'rhtml'        => 'RHTML',
+        'ruby'         => 'Ruby',
+        'rust'         => 'Rust',
+        'sass'         => 'SASS',
+        'scad'         => 'SCAD',
+        'scala'        => 'Scala',
+        'scheme'       => 'Scheme',
+        'scss'         => 'SCSS',
+        'sh'           => 'SH',
+        'sjs'          => 'SJS',
+        'smarty'       => 'Smarty',
+        'snippets'     => 'snippets',
         'soy_template' => 'Soy Template',
-        'space' => 'Space',
-        'sql' => 'SQL',
-        'stylus' => 'Stylus',
-        'svg' => 'SVG',
-        'tcl' => 'Tcl',
-        'tex' => 'Tex',
-        'text' => 'Text',
-        'textile' => 'Textile',
-        'toml' => 'Toml',
-        'twig' => 'Twig',
-        'typescript' => 'Typescript',
-        'vala' => 'Vala',
-        'vbscript' => 'VBScript',
-        'velocity' => 'Velocity',
-        'verilog' => 'Verilog',
-        'vhdl' => 'VHDL',
-        'xml' => 'XML',
-        'xquery' => 'XQuery',
-        'yaml' => 'YAML',
+        'space'        => 'Space',
+        'sql'          => 'SQL',
+        'stylus'       => 'Stylus',
+        'svg'          => 'SVG',
+        'tcl'          => 'Tcl',
+        'tex'          => 'Tex',
+        'text'         => 'Text',
+        'textile'      => 'Textile',
+        'toml'         => 'Toml',
+        'twig'         => 'Twig',
+        'typescript'   => 'Typescript',
+        'vala'         => 'Vala',
+        'vbscript'     => 'VBScript',
+        'velocity'     => 'Velocity',
+        'verilog'      => 'Verilog',
+        'vhdl'         => 'VHDL',
+        'xml'          => 'XML',
+        'xquery'       => 'XQuery',
+        'yaml'         => 'YAML',
     );
 
     /**
@@ -228,6 +228,7 @@ class InputfieldAceExtended extends InputfieldTextarea
             'fontFamily'         => 'Monaco, Menlo, "Ubuntu Mono", Consolas, "source-code-pro", monospace',
             'enableLocalStorage' => true,
             'advancedOptions'    => file_get_contents(__DIR__ . '/advanced-options.json'),
+            'extensionsOptions'   => file_get_contents(__DIR__ . '/extensions-options.json'),
 
             'themes' => array(
                 'tomorrow',
@@ -578,7 +579,7 @@ class InputfieldAceExtended extends InputfieldTextarea
     {
         $this->config->scripts->add("{$this->jsUrl}/ace-extended.js");
 
-        $field = $this->fields->get($this->name);
+        $field = $this->getField();
 
         $inputfields = parent::___getConfigInputfields();
 
@@ -690,7 +691,7 @@ class InputfieldAceExtended extends InputfieldTextarea
         );
 
         $wrapper->add($fields);
-        $this->addAdvancedOptionsInputfield($wrapper);
+        $this->addJSONOptionsInputfields($field, $wrapper);
 
         $inputfields->append($wrapper);
 
@@ -702,39 +703,48 @@ class InputfieldAceExtended extends InputfieldTextarea
      *
      * @param InputfieldFieldset $wrapper
      */
-    public function addAdvancedOptionsInputfield($wrapper)
+    public function addJSONOptionsInputfields($field, $wrapper)
     {
-        $advancedDescription = sprintf(
-            $this->_('Please refer to the [Configuration Reference](%s). Must be valid JSON, [check now](%s) for validity.'),
-            'https://github.com/ajaxorg/ace/wiki/Configuring-Ace',
-            self::CHECK_VALIDITY_LINK
+        $fields = array(
+            'advancedOptions' => $this->_('Advanced options'),
+            'extensionsOptions' => $this->_('Extensions options'),
         );
+        foreach ($fields as $name => $label) {
+            $description = sprintf(
+                $this->_('Please refer to the [Configuration Reference](%s). Must be valid JSON, [check now](%s) for validity.'),
+                'https://github.com/ajaxorg/ace/wiki/Configuring-Ace',
+                str_replace("{name}", $name, self::CHECK_VALIDITY_LINK)
+            );
 
-        $advancedValue = $this->getValue($field, 'advancedOptions');
-        $advancedRows = count(preg_split('/\n|\r/', $advancedValue));
+            $value = $this->getValue($field, $name);
+            $rows = count(preg_split('/\n|\r/', $value));
 
-        $advancedOptions = $this->modules->get('InputfieldAceExtended');
+            $options = $this->modules->get('InputfieldAceExtended');
 
-        $advancedOptions->label              = $this->_('Advanced options');
-        $advancedOptions->description        = $advancedDescription;
-        $advancedOptions->name               = 'advancedOptions';
-        $advancedOptions->value              = $advancedValue;
-        $advancedOptions->collapsed          = Inputfield::collapsedYes;
-        $advancedOptions->rows               = $advancedRows;
-        $advancedOptions->enableLocalStorage = false;
-        $advancedOptions->mode               = 'json';
-        $advancedOptions->optionsCollapsed   = Inputfield::collapsedHidden;
-        $advancedOptions->theme              = 'tomorrow';
+            $options->label              = $label;
+            $options->description        = $description;
+            $options->name               = $name;
+            $options->value              = $value;
+            // $options->collapsed          = Inputfield::collapsedYes;
+            $options->collapsed          = Inputfield::collapsedNo;
+            $options->rows               = $rows;
+            $options->enableLocalStorage = false;
+            $options->mode               = 'json';
+            $options->optionsCollapsed   = Inputfield::collapsedHidden;
+            $options->theme              = 'tomorrow';
 
-        $advancedOptions->setAdvancedOptions(array(
-            'highlightActiveLine' => false,
-            'showLineNumbers' => false,
-            'showGutter' => false,
-            'tabSize' => 2,
-            'printMarginColumn' => false,
-        ));
+            $options->setAdvancedOptions(array(
+                'highlightActiveLine' => false,
+                'showLineNumbers' => false,
+                'showGutter' => false,
+                'tabSize' => 2,
+                'printMarginColumn' => false,
+            ));
 
-        $wrapper->add($advancedOptions);
+            $wrapper->add($options);
+        }
+
+
     }
 
     /**
@@ -745,31 +755,6 @@ class InputfieldAceExtended extends InputfieldTextarea
     public function getAdvancedOptions()
     {
         return json_decode($this->getValue($this, 'advancedOptions'));
-    }
-
-    /**
-     * get an advanced option via `$name`
-     *
-     * @param  string $name
-     * @return mixed
-     */
-    public function getAdvancedOption($name)
-    {
-        $advancedOptions = $this->getAdvancedOptions();
-        return isset($advancedOptions[$name]) ? $advancedOptions[$name] : null;
-    }
-
-    /**
-     * set an advanced option via `$name` => `$value`
-     *
-     * @param string $name
-     * @param mixed $value
-     */
-    public function setAdvancedOption($name, $value)
-    {
-        $advancedOptions = $this->getAdvancedOptions();
-        $advancedOptions->$name = $value;
-        $this->advancedOptions = json_encode($advancedOptions);
     }
 
     /**
@@ -784,6 +769,30 @@ class InputfieldAceExtended extends InputfieldTextarea
             $advancedOptions->$name = $value;
         }
         $this->advancedOptions = json_encode($advancedOptions);
+    }
+
+    /**
+     * get all extension options
+     *
+     * @return object
+     */
+    public function getExtensionOptions()
+    {
+        return json_decode($this->getValue($this, 'extensionsOptions'));
+    }
+
+    /**
+     * set extension options via array
+     *
+     * @param array $options
+     */
+    public function setExtensionOptions(array $options)
+    {
+        $extensionsOptions = $this->getExtensionOptions();
+        foreach ($options as $name => $value) {
+            $extensionsOptions->$name = $value;
+        }
+        $this->extensionsOptions = json_encode($extensionsOptions);
     }
 
     /**
@@ -805,5 +814,19 @@ class InputfieldAceExtended extends InputfieldTextarea
         if ($forceDefault) return $defaults[$name];
         $value = isset($field->$name) ? $field->$name : $defaults[$name];
         return is_int($value) ? (int) $value : $value;
+    }
+
+
+    protected function getField()
+    {
+        // differentiate between page and api mode, otherwise the field settings
+        // are not retrieved correctly
+
+        // this is for page mode
+        $field = $this->fields->get($this->name);
+        // this is for non page mode, instantiated via api
+        if (!$field) {
+            $field = $this;
+        }
     }
 }

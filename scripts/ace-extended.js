@@ -340,10 +340,7 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
                     });
                 })();
             })();
-
         });
-
-
     };
 
     $(function() { // dom loaded
@@ -352,53 +349,48 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
         (function() {
             "use strict";
 
-            var CHECK_VALIDITY_LINK = '#ace-check-json-validity';
-            var CHECK_VALIDITY_SELECTOR = 'a[href="'+CHECK_VALIDITY_LINK+'"]';
+            var CHECK_VALIDITY_SELECTOR = 'a[href="#ace-check-json-validity-for-{name}"]';
             var CLEAR_LOCAL_STORAGE_DATA_KEY = 'clear-local-storage';
             var CLEAR_LOCAL_STORAGE_BUTTON_SELECTOR = '#ace-clear-local-storage';
 
-            $(CHECK_VALIDITY_SELECTOR).on('click', function(evt) {
-                evt.preventDefault();
+            $.each(['advancedOptions', 'extensionsOptions'], function(index, name) {
+                var selector = CHECK_VALIDITY_SELECTOR.replace("{name}", name);
+                $(selector).on('click', function(evt) {
+                    evt.preventDefault();
+                    var $options = $('textarea[name="'+name+'"]');
+                    if ($options.length) {
+                        var text = $options.val(),
+                            error = false;
 
-                var $advancedOptions = $('textarea[name="advancedOptions"]');
-
-                if ($advancedOptions.length) {
-
-                    var text = $advancedOptions.val();
-
-                    if ($.trim(text) === '') {
-                        alert('OK!');
-                        return;
+                        if ($.trim(text) === '') { alert('OK!'); return; }
+                        try {
+                            JSON.parse(text);
+                        } catch (e) {
+                            alert(e);
+                            error = true;
+                        }
+                        if (!error) { alert('OK!'); }
                     }
-
-                    var error = false;
-
-                    try {
-                        JSON.parse(text);
-                    } catch (e) {
-                        alert(e);
-                        error = true;
-                    }
-
-                    if (!error) {
-                        alert('OK!');
-                    }
-                }
+                });
             });
+
+            var disableButton = function($button) {
+                $button.attr('disabled', 'disabled').css({opacity: 0.4});
+            };
 
             $(CLEAR_LOCAL_STORAGE_BUTTON_SELECTOR).each(function() {
 
-                var $button = $(this);
-                var fieldName = $button.data(CLEAR_LOCAL_STORAGE_DATA_KEY);
+                var $button = $(this),
+                    fieldName = $button.data(CLEAR_LOCAL_STORAGE_DATA_KEY);
 
                 if (!Storage.has(fieldName)) {
-                    $button.attr('disabled', 'disabled').css({opacity: 0.4});
+                    disableButton($button);
                 }
 
                 $button.on('click', function(evt) {
                     evt.preventDefault();
                     Storage.clearAll(fieldName);
-                    $button.attr('disabled', 'disabled').css({opacity: 0.4});
+                    disableButton($button);
                 });
             });
         })();
