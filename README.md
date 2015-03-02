@@ -51,8 +51,11 @@ $ace->setExtensionOptions(array(
 * make `advancedOptions` use the the Inputfield itself, INCEPTION!
 
 **0.4.x** move advanced options into one dimensional hash, rather that in sub objects like `editor`, `session` etc.
+
 **0.3.x** add possibility to apply advanced options via json string in a separate field setting
+
 **0.2.x** add possibility to clear localStorage, add cookie fallback
+
 **0.1.0** initial version
 
 ## Roadmap
