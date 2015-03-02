@@ -37,6 +37,12 @@ $ace->setExtensionOptions(array(
 
 ## Changelog
 
+**0.6.x - 0.12.x**
+
+* use noconflict version of ace
+* implement possibility to add built-in extensions, by default [emmet](http://emmet.io/) is enabled
+* apply major PHP code refactoring
+
 **0.5.x**
 
 * enable field to be instantiated via `API`
@@ -45,7 +51,7 @@ $ace->setExtensionOptions(array(
 * make `advancedOptions` use the the Inputfield itself, INCEPTION!
 
 **0.4.x** move advanced options into one dimensional hash, rather that in sub objects like `editor`, `session` etc.
-**0.3.x** add possiblity to apply advanced options via json string in a separate field setting
+**0.3.x** add possibility to apply advanced options via json string in a separate field setting
 **0.2.x** add possibility to clear localStorage, add cookie fallback
 **0.1.0** initial version
 
