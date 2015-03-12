@@ -1,5 +1,5 @@
 # Inputfield ACE Extended
-Version `0.12.x`
+Version `1.0.x`
 
 A highly configurable and flexible ACE editor input field for [ProcessWire 2.5.5](http://processwire.com/)
 
@@ -37,7 +37,7 @@ $ace->setExtensionOptions(array(
 
 ## Changelog
 
-**0.6.x - 0.12.x**
+**0.6.x - 1.0.x**
 
 * use noconflict version of ace
 * implement possibility to add built-in extensions, by default [emmet](http://emmet.io/) is enabled
