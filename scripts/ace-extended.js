@@ -164,6 +164,9 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
 
             editor.on('change', function() {
                 $textarea.val(editor.getValue());
+
+                // if (editor.curOp && editor.curOp.command.name) console.log("user change");
+                // else console.log("other change")
             });
 
             $.each(['advancedOptions','extensionsOptions'], function(index, name) {
@@ -436,7 +439,6 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
                 // initalize the edior after the toggle has opened the field
                 $toggle.on('click', function() {
                     var $toggle = $(this);
-
                     // only init once
                     if (!isInit && $fieldWrapper.hasClass(INPUT_FIELD_COLLAPSED_CLASS)) {
                         // hack with timeout to init after the collapse animattion has
