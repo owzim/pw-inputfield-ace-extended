@@ -37,28 +37,20 @@ $ace->setExtensionOptions(array(
 
 ## Changelog
 
-`1.0.2` Expose `$textarea.getAce()` to get the editor instance
-
-`0.6.x` - `1.0.x`
-
-* Use no-conflict version of ace
-* Implement possibility to add built-in extensions, by default [emmet](http://emmet.io/) is enabled
-* Apply major PHP code refactoring
-
-`0.5.x`
-
-* Enable field to be instantiated via `API`
-* Add interval check on `editor.renderer.lineHeight` and only initialize everything via callback when it is available
-* Add option to enable/disable `localStorage`
-* Make `advancedOptions` use the the Inputfield itself, INCEPTION!
-
-`0.4.x` Move advanced options into one dimensional hash, rather that in sub objects like `editor`, `session` etc.
-
-`0.3.x` Add possibility to apply advanced options via JSON string in a separate field setting
-
-`0.2.x` Add possibility to clear localStorage, add cookie fall-back
-
-`0.1.0` Initial version
+- `1.1.3` Expose `$textarea.getAce()` to get the editor instance
+- `1.0.0`
+    * Use no-conflict version of ace
+    * Implement possibility to add built-in extensions, by default [emmet](http://emmet.io/) is enabled
+    * Apply PHP code refactoring
+- `0.5.0`
+    * Enable field to be instantiated via `API`
+    * Add interval check on `editor.renderer.lineHeight` and only initialize everything via callback when it is available
+    * Add option to enable/disable `localStorage`
+    * Make `advancedOptions` use the the Inputfield itself, INCEPTION!
+- `0.4.0` Move advanced options into one dimensional hash, rather that in sub objects like `editor`, `session` etc.
+- `0.3.0` Add possibility to apply advanced options via JSON string in a separate field setting
+- `0.2.0` Add possibility to clear localStorage, add cookie fall-back
+- `0.1.0` Initial version
 
 ## Roadmap
 
