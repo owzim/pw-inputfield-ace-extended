@@ -3,6 +3,12 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
 
 (function($, window, undefined) { // safe scope
 
+    $.fn.extend({
+        getAce: function() {
+            return $(this).data('ace-instance');
+        }
+    });
+
     /**
      * Storage
      *
@@ -161,6 +167,8 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
 
         var storage = new Storage(id, config, config.enableLocalStorage || false);
         var helper = aceHelper.get(editor, $editor, config, storage, function(helper) {
+
+            $textarea.data('ace-instance', editor);
 
             editor.on('change', function() {
                 $textarea.val(editor.getValue());

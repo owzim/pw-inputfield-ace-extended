@@ -37,6 +37,8 @@ $ace->setExtensionOptions(array(
 
 ## Changelog
 
+**1.0.2** Expose `$textarea.getAce()` to get the editor instance.
+
 **0.6.x - 1.0.x**
 
 * use noconflict version of ace
