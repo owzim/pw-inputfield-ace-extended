@@ -8,11 +8,11 @@
  * See README.md for usage instructions.
  *
  * @author Christian (owzim) Raunitschka <git@raunitschka.de>
- * @copyright Copyright (c) 2015, Christian Raunitschka
+ * @copyright Copyright (c) 2016, Christian Raunitschka
  *
  * This module is sponsored in part by Nibiri, aka forum member Macrura
  *
- * @version 1.0.2
+ * @version 1.0.3
  *
  * @filesource
  *
@@ -263,7 +263,7 @@ class InputfieldAceExtended extends InputfieldTextarea
         return array(
             'title'    => 'Inputfield ' . self::TITLE,
             'summary'  => 'A highly configurable and flexible ACE editor input field.',
-            'version'  => '1.0.2',
+            'version'  => '1.0.3',
             'author'   => 'owzim',
             'icon'     => 'code',
             'href'     => 'https://github.com/owzim/pw-inputfield-ace-extended',
