@@ -12,7 +12,7 @@
  *
  * This module is sponsored in part by Nibiri, aka forum member Macrura
  *
- * @version 1.1.3
+ * @version 1.2.0
  *
  * @filesource
  *
@@ -263,7 +263,7 @@ class InputfieldAceExtended extends InputfieldTextarea
         return array(
             'title'    => 'Inputfield ' . self::TITLE,
             'summary'  => 'A highly configurable and flexible ACE editor input field.',
-            'version'  => '1.1.3',
+            'version'  => '1.2.0',
             'author'   => 'owzim',
             'icon'     => 'code',
             'href'     => 'https://github.com/owzim/pw-inputfield-ace-extended',
@@ -314,7 +314,7 @@ class InputfieldAceExtended extends InputfieldTextarea
             $js[$name] = $this->$name;
         }
         $js['rows'] = $this->rows;
-        $this->js($this->name, $js);
+        $js['basePath'] = $this->aceUrl;
 
         $this->config->styles->add("{$this->cssUrl}/ace.css");
         $this->config->scripts->add("{$this->aceUrl}/ace.js");
@@ -327,15 +327,39 @@ class InputfieldAceExtended extends InputfieldTextarea
 
         $textarea = parent::___render();
 
-        $editor = "
-        <div class='InputfieldMarkup'>
-            <div id='{$id}' class='InputfieldContent ace-editor'></div>
-        </div>";
+        $scripts = array();
+        $styles = array();
 
-        return "
-        <div data-input-class='{$this->className}' data-field-name='{$this->name}'>
-            {$options}{$editor}{$textarea}
-        </div>";
+        if ($this->config->ajax) {
+            $scripts = array_merge(
+                array(
+                    "{$this->aceUrl}/ace.js",
+                ),
+                $this->addExtensionScripts(),
+                array(
+                    "{$this->jsUrl}/ace-extended.js"
+                )
+            );
+            $styles = array(
+                "{$this->cssUrl}/ace.css"
+            );
+        }
+
+        $args = array(
+            'id'        => $id,
+            'options'   => $options,
+            'textarea'  => $textarea,
+            'className' => $this->className,
+            'name'      => $this->name,
+            'jsOptions' => json_encode($js),
+            'scripts'   => json_encode($scripts),
+            'styles'    => json_encode($styles),
+            'ajax'      => $this->config->ajax ? 'true' : 'false',
+        );
+
+        $args['script'] = $this->simpleTpl('ace-inline.js', $args);
+        return $this->simpleTpl('ace.html', $args);
+
     }
 
     /**
@@ -346,12 +370,16 @@ class InputfieldAceExtended extends InputfieldTextarea
     {
         // see https://github.com/ajaxorg/ace/wiki/Extensions for config
         $extensions = $this->extensions;
+        $rtn = array();
         foreach ($extensions as $extension) {
             if (file_exists("{$this->extCoresPath}/{$extension}.js")) {
                 $this->config->scripts->add("{$this->extCoresUrl}/{$extension}.js");
             }
-            $this->config->scripts->add("{$this->aceUrl}/ext-{$extension}.js");
+            $scriptUrl = "{$this->aceUrl}/ext-{$extension}.js";
+            $this->config->scripts->add($scriptUrl);
+            $rtn[] = $scriptUrl;
         }
+        return $rtn;
     }
 
     public function getLocalStorageID()
@@ -374,11 +402,12 @@ class InputfieldAceExtended extends InputfieldTextarea
         $markup->name = 'optionsMenu';
         $markup->icon = 'cog';
 
-        $theme = $this->renderThemeOptions();
-        $mode = $this->renderModeOptions();
-        $fontSize = $this->renderFontSizeInput();
+        $markup->value = implode('', array(
+            $this->renderThemeOptions(),
+            $this->renderModeOptions(),
+            $this->renderFontSizeInput(),
+        ));
 
-        $markup->value = "{$theme}{$mode}{$fontSize}";
         $markup->collapsed = $this->optionsCollapsed;
 
         $optionsWrapper->append($markup);
@@ -792,5 +821,14 @@ class InputfieldAceExtended extends InputfieldTextarea
             $extensionsOptions->$name = $value;
         }
         $this->extensionsOptions = json_encode($extensionsOptions);
+    }
+
+    public function simpleTpl($name, $args = array())
+    {
+        $str = file_get_contents(__DIR__ . "/templates/$name");
+        foreach ($args as $key => $value) {
+            $str = str_replace('{{' . $key. '}}', $value, $str);
+        }
+        return $str;
     }
 }

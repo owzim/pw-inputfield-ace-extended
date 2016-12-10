@@ -1,5 +1,5 @@
 # Inputfield Ace Extended
-Version `1.0.3`
+Version `1.2.0`
 
 A highly configurable and flexible [Ace editor](https://ace.c9.io/) input field for [ProcessWire](http://processwire.com/) `2.5.5+` and `3.0.0+`
 
@@ -37,6 +37,7 @@ $ace->setExtensionOptions(array(
 
 ## Changelog
 
+- `1.2.0` Enable [ajax mode](https://processwire.com/blog/posts/new-ajax-driven-inputs-conditional-hooks-template-family-settings-and-more/#new-ajax-driven-inputfields-system-wide)
 - `1.1.3` Expose `$textarea.getAce()` to get the editor instance
 - `1.0.0`
     * Use no-conflict version of ace
@@ -48,12 +49,11 @@ $ace->setExtensionOptions(array(
     * Add option to enable/disable `localStorage`
     * Make `advancedOptions` use the the Inputfield itself, INCEPTION!
 - `0.4.0` Move advanced options into one dimensional hash, rather that in sub objects like `editor`, `session` etc.
-- `0.3.0` Add possibility to apply advanced options via JSON string in a separate field setting
+- `0.3.0` Add possibility to apply advanced options via `JSON` string in a separate field setting
 - `0.2.0` Add possibility to clear localStorage, add cookie fall-back
 - `0.1.0` Initial version
 
 ## Roadmap
 
-* Enable [ajax mode](https://processwire.com/blog/posts/new-ajax-driven-inputs-conditional-hooks-template-family-settings-and-more/#new-ajax-driven-inputfields-system-wide)
 * Add full screen mode
 * Expose a jQuery API for resizing, setting row count etc.

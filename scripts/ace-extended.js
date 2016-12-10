@@ -87,6 +87,8 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
     var aceHelper = {
         get: function(editor, $editor, config, storage, ready) {
 
+            ace.config.set('basePath', config.basePath);
+
             var rtn = {
                 storage: storage,
                 setFontSize: function(size) {
@@ -408,59 +410,83 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
         })();
 
         // on page edit
-        (function() {
+        (function(w) {
             "use strict";
 
-            var INPUT_FIELD_COLLAPSED_CLASS = 'InputfieldStateCollapsed';
-            var INPUT_FIELD_TOGGLE_CLASS = 'InputfieldHeader';
+            var namespace = 'INPUTFIELD_ACE_EXTENDED';
 
-            // get each field
-            var $fieldWrappers = $('.' + INPUT_FIELD_CLASS);
+            if (!w[namespace]) {
+                w[namespace] = { fields: {} };
+            }
 
-            // all this overhead fixes #2
-            $fieldWrappers.each(function() {
+            var initFields = w[namespace].initFields = function() {
 
-                // the actual entire field
-                var $fieldWrapper = $(this);
+                var fields = w[namespace].fields;
 
-                // the ace field wrapper withing
-                var $aceField =  $fieldWrapper.find(ACE_FIELDS_SELECTOR);
+                var INPUT_FIELD_COLLAPSED_CLASS = 'InputfieldStateCollapsed';
+                var INPUT_FIELD_TOGGLE_CLASS = 'InputfieldHeader';
 
-                // get the api fieldname
-                var fieldName = $aceField.data(FIELD_NAME_DATA_KEY);
+                for (var fieldname in fields) {
 
-                // the header that toggles the fields collapse state
-                var $toggle = $fieldWrapper.find('>.'+INPUT_FIELD_TOGGLE_CLASS);
+                    (function(fieldname, field) { // safe scope
+                        "use strict";
 
-                // is it collapsed?
-                var isCollapsed = $fieldWrapper.hasClass(INPUT_FIELD_COLLAPSED_CLASS);
+                        if (field.initialized) return;
 
-                // not initialized yet
-                var isInit = false;
+                        var fieldId = '#' + fieldname,
+                            $field = $(fieldId);
 
-                // if it is not collapsed go ahead, and initalize the ace editor
-                if (!isCollapsed) {
-                    acefy($aceField, config[INPUT_FIELD_CLASS][fieldName]);
-                    isInit = true;
+                        // the actual entire field
+                        var $fieldWrapper = $field.closest('.' + INPUT_FIELD_CLASS);
+
+                        // the ace field wrapper withing
+                        var $aceField =  $fieldWrapper.find(ACE_FIELDS_SELECTOR);
+
+                        // get the api fieldname
+                        var fieldName = $aceField.data(FIELD_NAME_DATA_KEY);
+
+                        // the header that toggles the fields collapse state
+                        var $toggle = $fieldWrapper.find('>.'+INPUT_FIELD_TOGGLE_CLASS);
+
+                        // is it collapsed?
+                        var isCollapsed = $fieldWrapper.hasClass(INPUT_FIELD_COLLAPSED_CLASS);
+
+                        // not initialized yet
+                        var isInit = false;
+
+                        // if it is not collapsed go ahead, and initalize the ace editor
+                        if (!isCollapsed) {
+                            acefy($aceField, field.options);
+                            isInit = true;
+                            field.initialized = isInit;
+                        }
+
+                        // initalize the edior after the toggle has opened the field
+                        $toggle.on('click', function() {
+                            var $toggle = $(this);
+                            // only init once
+                            if (!isInit && $fieldWrapper.hasClass(INPUT_FIELD_COLLAPSED_CLASS)) {
+                                // hack with timeout to init after the collapse animattion has
+                                // finished, I wish there was a better way
+                                $aceField.css({ opacity: 0, transition: 'opacity 0.3s ease' });
+
+                                setTimeout(function()  {
+                                    $aceField.css({ opacity: 1 });
+                                    acefy($aceField, field.options);
+                                    isInit = true;
+                                    field.initialized = isInit;
+                                }, 333);
+                            }
+                        });
+
+                    })(fieldname, fields[fieldname]);
                 }
 
-                // initalize the edior after the toggle has opened the field
-                $toggle.on('click', function() {
-                    var $toggle = $(this);
-                    // only init once
-                    if (!isInit && $fieldWrapper.hasClass(INPUT_FIELD_COLLAPSED_CLASS)) {
-                        // hack with timeout to init after the collapse animattion has
-                        // finished, I wish there was a better way
-                        $aceField.css({ opacity: 0, transition: 'opacity 0.3s ease' });
 
-                        setTimeout(function()  {
-                            $aceField.css({ opacity: 1 });
-                            acefy($aceField, config[INPUT_FIELD_CLASS][fieldName]);
-                            isInit = true;
-                        }, 333);
-                    }
-                });
-            });
-        })();
+            }
+
+            initFields();
+
+        })(window);
     });
 })(jQuery, window);
