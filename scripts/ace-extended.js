@@ -1,7 +1,56 @@
 // localStorage fallback with cookies
-window.localStorage||Object.defineProperty(window,"localStorage",new function(){var a=[],b={};Object.defineProperty(b,"getItem",{value:function(a){return a?this[a]:null},writable:!1,configurable:!1,enumerable:!1}),Object.defineProperty(b,"key",{value:function(b){return a[b]},writable:!1,configurable:!1,enumerable:!1}),Object.defineProperty(b,"setItem",{value:function(a,b){a&&(document.cookie=escape(a)+"="+escape(b)+"; expires=Tue, 19 Jan 2038 03:14:07 GMT; path=/")},writable:!1,configurable:!1,enumerable:!1}),Object.defineProperty(b,"length",{get:function(){return a.length},configurable:!1,enumerable:!1}),Object.defineProperty(b,"removeItem",{value:function(a){a&&(document.cookie=escape(a)+"=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/")},writable:!1,configurable:!1,enumerable:!1}),this.get=function(){var c;for(var d in b)c=a.indexOf(d),-1===c?b.setItem(d,b[d]):a.splice(c,1),delete b[d];for(a;a.length>0;a.splice(0,1))b.removeItem(a[0]);for(var e,f,g=0,h=document.cookie.split(/\s*;\s*/);g<h.length;g++)e=h[g].split(/\s*=\s*/),e.length>1&&(b[f=unescape(e[0])]=unescape(e[1]),a.push(f));return b},this.configurable=!1,this.enumerable=!0});
+window.localStorage||Object.defineProperty(window,'localStorage',new function(){var a=[],b={};Object.defineProperty(b,'getItem',{value:function(a){return a?this[a]:null},writable:!1,configurable:!1,enumerable:!1}),Object.defineProperty(b,'key',{value:function(b){return a[b]},writable:!1,configurable:!1,enumerable:!1}),Object.defineProperty(b,'setItem',{value:function(a,b){a&&(document.cookie=escape(a)+'='+escape(b)+'; expires=Tue, 19 Jan 2038 03:14:07 GMT; path=/')},writable:!1,configurable:!1,enumerable:!1}),Object.defineProperty(b,'length',{get:function(){return a.length},configurable:!1,enumerable:!1}),Object.defineProperty(b,'removeItem',{value:function(a){a&&(document.cookie=escape(a)+'=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/')},writable:!1,configurable:!1,enumerable:!1}),this.get=function(){var c;for(var d in b)c=a.indexOf(d),-1===c?b.setItem(d,b[d]):a.splice(c,1),delete b[d];for(a;a.length>0;a.splice(0,1))b.removeItem(a[0]);for(var e,f,g=0,h=document.cookie.split(/\s*;\s*/);g<h.length;g++)e=h[g].split(/\s*=\s*/),e.length>1&&(b[f=unescape(e[0])]=unescape(e[1]),a.push(f));return b},this.configurable=!1,this.enumerable=!0});
+
+
+
+
 
 (function($, window, undefined) { // safe scope
+
+    var onfullscreenchange = (function() {
+        'use strict';
+
+        var eventNames = [
+                'onfullscreenchange',
+                'onmozfullscreenchange',
+                'onwebkitfullscreenchange',
+                'onmsfullscreenchange',
+            ],
+            eventName, index;
+
+        for (var index in eventNames) {
+            eventName = eventNames[index];
+            if (eventName in document) {
+                return function (handler) {
+                    document.addEventListener(eventName, handler);
+                };
+            }
+        }
+
+        return function () {};
+    })();
+
+    var exitFullscreen = (function() {
+        'use strict';
+
+        var methodNames = [
+                'exitFullscreen',
+                'webkitExitFullscreen',
+                'mozCancelFullScreen',
+                'msExitFullscreen',
+            ],
+            methodName, index;
+
+        for (var index in methodNames) {
+            methodName = methodNames[index];
+            if (methodName in document) {
+                return function () {
+                    document[methodName]();
+                };
+            }
+        }
+        return function () {};
+    })();
 
     $.fn.extend({
         getAce: function() {
@@ -9,64 +58,70 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
         }
     });
 
-    /**
-     * Storage
-     *
-     * @param {string} namespace
-     * @param {object} config
-     */
-    var Storage = function(namespace, config, enabled) {
+    var Storage = (function() {
+        "use strict";
 
-        this.namespace = namespace;
-        this.config = config;
+        /**
+         * Storage
+         *
+         * @param {string} namespace
+         * @param {object} config
+         */
+        var Storage = function(namespace, config, enabled) {
 
-        this.set = function(name, value) {
-            if (!enabled) return;
-            var values = this.getAll();
-            values[name] = value;
-            this.setAll(values);
+            this.namespace = namespace;
+            this.config = config;
+
+            this.set = function(name, value) {
+                if (!enabled) return;
+                var values = this.getAll();
+                values[name] = value;
+                this.setAll(values);
+            };
+
+            this.get = function(name) {
+                if (!enabled) return this.config[name];
+                var values = this.getAll();
+                return values[name] || this.config[name];
+            };
+
+            this.getAll = function() {
+                if (!enabled) return this.config;
+                var values;
+                if (localStorage[this.namespace]) {
+                    values = JSON.parse(localStorage.getItem(this.namespace));
+                } else {
+                    values = {};
+                }
+                return values;
+            };
+
+            this.setAll = function(values) {
+                return localStorage.setItem(this.namespace, JSON.stringify(values));
+            };
         };
 
-        this.get = function(name) {
-            if (!enabled) return this.config[name];
-            var values = this.getAll();
-            return values[name] || this.config[name];
-        };
-
-        this.getAll = function() {
-            if (!enabled) return this.config;
-            var values;
-            if (localStorage[this.namespace]) {
-                values = JSON.parse(localStorage.getItem(this.namespace));
+        /**
+         * clearAll
+         *
+         * @param  {string} namespace
+         */
+        Storage.clearAll = function(namespace) {
+            if (namespace) {
+                // static
+                localStorage.clear(namespace);
             } else {
-                values = {};
+                // instance
+                localStorage.clear(this.namespace);
             }
-            return values;
         };
 
-        this.setAll = function(values) {
-            return localStorage.setItem(this.namespace, JSON.stringify(values));
+        Storage.has = function(namespace) {
+            return localStorage.getItem(namespace) ? true : false;
         };
-    };
 
-    /**
-     * clearAll
-     *
-     * @param  {string} namespace
-     */
-    Storage.clearAll = function(namespace) {
-        if (namespace) {
-            // static
-            localStorage.clear(namespace);
-        } else {
-            // instance
-            localStorage.clear(this.namespace);
-        }
-    };
-
-    Storage.has = function(namespace) {
-        return localStorage.getItem(namespace) ? true : false;
-    };
+        return Storage;
+    })();
 
     var INPUT_FIELD_CLASS = 'InputfieldAceExtended';
 
@@ -104,10 +159,10 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
                     editor.resize();
                 },
                 setTheme: function(theme) {
-                    editor.setTheme("ace/theme/" + theme);
+                    editor.setTheme('ace/theme/' + theme);
                 },
                 setMode: function(mode) {
-                    editor.getSession().setMode("ace/mode/" + mode);
+                    editor.getSession().setMode('ace/mode/' + mode);
                 },
 
                 setFontFamily: function(fontFamily) {
@@ -158,6 +213,8 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
 
         var $placeHolder = $wrapper.find('.ace-editor');
 
+        var $resize = $wrapper.find('.ace-editor-resize');
+
         var id = $placeHolder.attr('id');
         var $textarea = $wrapper.find('textarea');
         $textarea.hide();
@@ -166,6 +223,69 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
 
         var editor = ace.edit(id);
         var $editor = $wrapper.find('.ace_editor');
+        $wrapper.find('.ace_scroller').append($resize);
+
+        var resize = function($editor) {
+
+            if ($editor.data('fullscreen')) {
+                $editor.css({
+                    height: $(window).height()
+                });
+            }
+
+            editor.resize();
+
+        }
+
+        var exitFullScreen = function( event ) {
+
+            if ($editor.data('fullscreen')) {
+                $editor.removeClass('fullscreen');
+                $editor.removeAttr('style');
+                $editor.data('fullscreen', false);
+            }
+            resize($editor);
+        }
+
+        onfullscreenchange(exitFullScreen);
+
+        $editor.keyup(function (e) {
+            if (e.keyCode === 27) {
+                console.log('ESC');
+                exitFullScreen();
+            }
+        });
+
+
+        $resize.on('click', function(e) {
+            e.preventDefault();
+
+            if (!$editor.data('fullscreen')) {
+
+                var elem = $editor[0];
+
+                var req = elem.requestFullScreen || elem.webkitRequestFullScreen || elem.mozRequestFullScreen;
+
+                req.call(elem);
+
+                $editor.data('fullscreen', true);
+
+
+            } else {
+
+                $editor.removeAttr('style');
+                $editor.data('fullscreen', false);
+
+                exitFullscreen();
+
+            }
+
+            $editor.toggleClass('fullscreen');
+
+            resize($editor);
+        });
+
+
 
         var storage = new Storage(id, config, config.enableLocalStorage || false);
         var helper = aceHelper.get(editor, $editor, config, storage, function(helper) {
@@ -174,9 +294,10 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
 
             editor.on('change', function() {
                 $textarea.val(editor.getValue());
+                console.log('CHANGE');
 
-                // if (editor.curOp && editor.curOp.command.name) console.log("user change");
-                // else console.log("other change")
+                // if (editor.curOp && editor.curOp.command.name) console.log('user change');
+                // else console.log('other change')
             });
 
             $.each(['advancedOptions','extensionsOptions'], function(index, name) {
@@ -229,26 +350,31 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
                 storage.set('rows', config.rows);
             }
 
+            $(window).on('resize', function() {
+                helper.setRows(rows);
+                resize($editor);
+            });
+
 
             // TODO: refactor this, not pretty
             (function() { // safe scope
-                "use strict";
+                'use strict';
 
-                var $dragHitarea = $("<div></div>")
+                var $dragHitarea = $('<div></div>')
                     .addClass(DRAG_HITAREA_CLASS_NAME)
                     .height(DRAGGER_HEIGHT);
-                var $dragger = $("<div></div>")
+                var $dragger = $('<div></div>')
                     .addClass(DRAGGER_CLASS_NAME)
                     .height(DRAGGER_HEIGHT).css({
-                        marginTop: (-(DRAGGER_HEIGHT)) + "px",
+                        marginTop: (-(DRAGGER_HEIGHT)) + 'px',
                         position: 'fixed'
                     });
 
-                var $overlay = $("<div></div>")
+                var $overlay = $('<div></div>')
                     .addClass(OVERLAY_CLASS_NAME).css({
                         position: 'fixed',
-                        width: "100%",
-                        height: "100%"
+                        width: '100%',
+                        height: '100%'
                     });
 
                 $placeHolder.append($dragHitarea);
@@ -277,15 +403,15 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
 
                     if (targetPosSnappedInRows >= MIN_ROWS) {
                         $dragger.css({
-                            top: parseInt(areaFixedTop + targetPosSnapped + (DRAGGER_HEIGHT/2)) + "px",
-                            left: parseInt(hitareaOffset.left) + "px",
-                            width: areaWidth  + "px"
+                            top: parseInt(areaFixedTop + targetPosSnapped + (DRAGGER_HEIGHT/2)) + 'px',
+                            left: parseInt(hitareaOffset.left) + 'px',
+                            width: areaWidth  + 'px'
                         });
 
                         $overlay.css({
-                            top: parseInt(areaFixedTop) + "px",
-                            left: parseInt(hitareaOffset.left) + "px",
-                            width: areaWidth  + "px"
+                            top: parseInt(areaFixedTop) + 'px',
+                            left: parseInt(hitareaOffset.left) + 'px',
+                            width: areaWidth  + 'px'
                         });
 
                         $overlay.height(targetPosSnapped - (DRAGGER_HEIGHT/2));
@@ -316,7 +442,7 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
                             height: 0
                         });
                         $dragger.hide();
-                        $dragger.css({top: (-$dragger.height()) + "px" });
+                        $dragger.css({top: (-$dragger.height()) + 'px' });
 
                     },
                     on: function() {
@@ -331,7 +457,7 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
 
 
                 (function() { // mouse events
-                    "use strict";
+                    'use strict';
 
                     var isDown = false;
 
@@ -361,14 +487,14 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
 
         // on input tab
         (function() {
-            "use strict";
+            'use strict';
 
             var CHECK_VALIDITY_SELECTOR = 'a[href="#ace-check-json-validity-for-{name}"]';
             var CLEAR_LOCAL_STORAGE_DATA_KEY = 'clear-local-storage';
             var CLEAR_LOCAL_STORAGE_BUTTON_SELECTOR = '#ace-clear-local-storage';
 
             $.each(['advancedOptions', 'extensionsOptions'], function(index, name) {
-                var selector = CHECK_VALIDITY_SELECTOR.replace("{name}", name);
+                var selector = CHECK_VALIDITY_SELECTOR.replace('{name}', name);
                 $(selector).on('click', function(evt) {
                     evt.preventDefault();
                     var $options = $('textarea[name="'+name+'"]');
@@ -411,7 +537,7 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
 
         // on page edit
         (function(w) {
-            "use strict";
+            'use strict';
 
             var namespace = 'INPUTFIELD_ACE_EXTENDED';
 
@@ -429,7 +555,7 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
                 for (var fieldname in fields) {
 
                     (function(fieldname, field) { // safe scope
-                        "use strict";
+                        'use strict';
 
                         if (field.initialized) return;
 
