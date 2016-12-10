@@ -1,0 +1,165 @@
+// sass --watch . --style expanded
+
+$white: white;
+$gray:  grey;
+
+%drag-box {
+    cursor: ns-resize;
+    position: absolute;
+    width: 100%;
+    background: $gray;
+    opacity: 0.2;
+    transition: opacity 0.3s, background 0.3s;
+}
+
+.InputfieldAceExtended {
+
+    .ace-editor-wrapper {
+        position: relative;
+
+        &:hover {
+
+            .ace-editor-resize {
+                opacity: 0.5;
+            }
+        }
+    }
+    .ace-editor-resize {
+        position: absolute;
+        top: 0;
+        right: 0;
+        z-index: 100;
+        opacity: 0;
+        transition: all 0.3s;
+        padding: 0.5rem;
+        line-height: 0.7;
+        background: rgba(black, 0.5);
+
+        &__minimize {
+            display: none;
+        }
+
+        color: white;
+
+        &:hover {
+            opacity: 1 !important;
+        }
+    }
+
+    .ace-editor {
+        position: relative;
+        padding: 0 !important;
+        margin: 0 !important;
+        margin-top: -1px !important;
+
+        &.fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            z-index: 10000;
+            border: 0;
+
+            .ace-editor-resize {
+
+                &__maximize {
+                    display: none;
+                }
+
+                &__minimize {
+                    display: inline;
+                }
+            }
+
+
+        }
+    }
+
+    .overlay {
+        background: $white;
+        opacity: 0.5;
+        z-index: 90;
+        border: 1px dashed $gray;
+        border-bottom: none;
+    }
+
+    .drag-hitarea {
+        @extend %drag-box;
+        bottom: 0;
+        opacity: 0.5;
+        background: none;
+        z-index: 100;
+
+        &:hover {
+            background: $gray;
+
+            &:after {
+                display: block;
+            }
+        }
+
+        &:after {
+            bottom: 0;
+            left: 0;
+            position: absolute;
+            width: 100%;
+            content: '';
+            display: block;
+            height: 300%;
+            background: none;
+            display: none;
+        }
+    }
+
+    .dragger {
+        @extend %drag-box;
+        z-index: 110;
+
+        &:after {
+            top: 0;
+            left: 0;
+            position: absolute;
+            width: 100%;
+            content: '';
+            display: block;
+            height: 500%;
+            background: none;
+            background: transparent;
+            transform: translateY(-50%);
+        }
+    }
+
+    .ace-option {
+        margin-right: 1em;
+
+        .ace-option-input {
+        }
+
+        .ace-option-label:after {
+            display: inline-block;
+            content: ":";
+            margin-right: 0.4em;
+        }
+    }
+
+    .Inputfield_optionsMenu {
+
+        .InputfieldHeader {
+            transition: all 0.3s;
+        }
+
+        &.InputfieldStateCollapsed .InputfieldHeader {
+            padding-top: 0.1em;
+            padding-bottom: 0.1em;
+            font-size: 0.8em;
+        }
+    }
+}
+
+body {
+
+    &.dragging-ace {
+        user-select: none;
+    }
+}

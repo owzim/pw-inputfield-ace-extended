@@ -1,118 +1,121 @@
-body.dragging-ace {
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -o-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+.InputfieldAceExtended .drag-hitarea, .InputfieldAceExtended .dragger {
+  cursor: ns-resize;
+  position: absolute;
+  width: 100%;
+  background: grey;
+  opacity: 0.2;
+  transition: opacity 0.3s, background 0.3s;
 }
 
+.InputfieldAceExtended .ace-editor-wrapper {
+  position: relative;
+}
+.InputfieldAceExtended .ace-editor-wrapper:hover .ace-editor-resize {
+  opacity: 0.5;
+}
+.InputfieldAceExtended .ace-editor-resize {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 100;
+  opacity: 0;
+  transition: all 0.3s;
+  padding: 0.5rem;
+  line-height: 0.7;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+}
+.InputfieldAceExtended .ace-editor-resize__minimize {
+  display: none;
+}
+.InputfieldAceExtended .ace-editor-resize:hover {
+  opacity: 1 !important;
+}
 .InputfieldAceExtended .ace-editor {
-    position: relative;
-    padding: 0 !important;
-    margin: 0 !important;
-    margin-top: -1px !important;
-    /*border-top: 0 !important;*/
+  position: relative;
+  padding: 0 !important;
+  margin: 0 !important;
+  margin-top: -1px !important;
 }
-
+.InputfieldAceExtended .ace-editor.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 10000;
+  border: 0;
+}
+.InputfieldAceExtended .ace-editor.fullscreen .ace-editor-resize__maximize {
+  display: none;
+}
+.InputfieldAceExtended .ace-editor.fullscreen .ace-editor-resize__minimize {
+  display: inline;
+}
 .InputfieldAceExtended .overlay {
-    background: white;
-    opacity: 0.5;
-    z-index: 90;
-    border: 1px dashed grey;
-    border-bottom: none;
+  background: white;
+  opacity: 0.5;
+  z-index: 90;
+  border: 1px dashed grey;
+  border-bottom: none;
 }
-
-.InputfieldAceExtended .drag-hitarea,
-.InputfieldAceExtended .dragger {
-    cursor: ns-resize;
-    position: absolute;
-    width: 100%;
-    background: grey;
-    opacity: 0.2;
-    -webkit-transition: opacity 0.3s, background 0.3s;
-    -o-transition: opacity 0.3s, background 0.3s;
-    transition: opacity 0.3s, background 0.3s;
-}
-
-.InputfieldAceExtended .dragger {
-    /*margin-top: -4px !important;*/
-}
-
-.InputfieldAceExtended .drag-hitarea:hover {
-    background: grey;
-}
-
 .InputfieldAceExtended .drag-hitarea {
-    bottom: 0;
-    opacity: 0.5;
-    background: none;
-    /*border-bottom: 1px solid grey;*/
-    z-index: 100;
+  bottom: 0;
+  opacity: 0.5;
+  background: none;
+  z-index: 100;
 }
-
+.InputfieldAceExtended .drag-hitarea:hover {
+  background: grey;
+}
 .InputfieldAceExtended .drag-hitarea:hover:after {
-    display: block;
+  display: block;
 }
-
 .InputfieldAceExtended .drag-hitarea:after {
-    bottom: 0;
-    left: 0;
-    position: absolute;
-    width: 100%;
-    content: '';
-    display: block;
-    height: 300%;
-    background: none;
-    display: none;
+  bottom: 0;
+  left: 0;
+  position: absolute;
+  width: 100%;
+  content: '';
+  display: block;
+  height: 300%;
+  background: none;
+  display: none;
 }
-
-.InputfieldAceExtended .dragger:after {
-    top: 0;
-    left: 0;
-    position: absolute;
-    width: 100%;
-    content: '';
-    display: block;
-    height: 500%;
-    background: none;
-    background: transparent;
-    -webkit-transform: translateY(-50%);
-          -ms-transform: translateY(-50%);
-              transform: translateY(-50%);
-}
-
 .InputfieldAceExtended .dragger {
-    z-index: 110;
+  z-index: 110;
 }
-
+.InputfieldAceExtended .dragger:after {
+  top: 0;
+  left: 0;
+  position: absolute;
+  width: 100%;
+  content: '';
+  display: block;
+  height: 500%;
+  background: none;
+  background: transparent;
+  transform: translateY(-50%);
+}
 .InputfieldAceExtended .ace-option {
-    margin-right: 1em;
+  margin-right: 1em;
 }
-
-.InputfieldAceExtended .ace-option .ace-option-label {
-}
-
 .InputfieldAceExtended .ace-option .ace-option-label:after {
-    display: inline-block;
-    content: ":";
-    margin-right: 0.4em;
+  display: inline-block;
+  content: ":";
+  margin-right: 0.4em;
 }
-
-.InputfieldAceExtended .ace-option .ace-option-input {
-}
-
 .InputfieldAceExtended .Inputfield_optionsMenu .InputfieldHeader {
-    -webkit-transition: all 0.3s;
-    -o-transition: all 0.3s;
-    transition: all 0.3s;
+  transition: all 0.3s;
 }
-
-.InputfieldAceExtended .Inputfield_optionsMenu.InputfieldStateCollapsed {
-}
-
 .InputfieldAceExtended .Inputfield_optionsMenu.InputfieldStateCollapsed .InputfieldHeader {
-    padding-top: 0.1em;
-    padding-bottom: 0.1em;
-    font-size: 0.8em;
+  padding-top: 0.1em;
+  padding-bottom: 0.1em;
+  font-size: 0.8em;
 }
+
+body.dragging-ace {
+  user-select: none;
+}
+
+/*# sourceMappingURL=ace.css.map */
