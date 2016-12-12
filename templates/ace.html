@@ -12,7 +12,11 @@
 
     {{textarea}}
 
-    <script type="text/javascript" charset="utf-8">
+    <!--
+        'data-ajax-enable' necessary, if the following issue is fixed like suggested:
+        https://github.com/processwire/processwire-issues/issues/112
+    -->
+    <script data-ajax-enable type="text/javascript" charset="utf-8">
     {{script}}
     </script>
 </div>
