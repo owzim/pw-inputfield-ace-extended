@@ -171,7 +171,10 @@ window.localStorage||Object.defineProperty(window,'localStorage',new function(){
                     editor.setTheme('ace/theme/' + theme);
                 },
                 setMode: function(mode) {
-                    editor.getSession().setMode('ace/mode/' + mode);
+                    editor.getSession().setMode({
+                        path: 'ace/mode/' + mode,
+                        inline: true
+                    });
                 },
 
                 setFontFamily: function(fontFamily) {
