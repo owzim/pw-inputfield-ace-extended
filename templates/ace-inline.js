@@ -1,5 +1,5 @@
 (function($, w, namespace) {
-    var fieldName = '{{name}}',
+    var fieldName = '{{fieldName}}',
         inputfieldName = 'Inputfield_' + fieldName,
         field, module;
 

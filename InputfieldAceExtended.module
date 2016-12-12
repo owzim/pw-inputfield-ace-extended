@@ -315,6 +315,7 @@ class InputfieldAceExtended extends InputfieldTextarea
         }
         $js['rows'] = $this->rows;
         $js['basePath'] = $this->aceUrl;
+        $js['fieldName'] = $this->name;
 
         $this->config->styles->add("{$this->cssUrl}/ace.css");
         $this->config->scripts->add("{$this->aceUrl}/ace.js");
@@ -350,7 +351,7 @@ class InputfieldAceExtended extends InputfieldTextarea
             'options'   => $options,
             'textarea'  => $textarea,
             'className' => $this->className,
-            'name'      => $this->name,
+            'fieldName'      => $this->name,
             'jsOptions' => json_encode($js),
             'scripts'   => json_encode($scripts),
             'styles'    => json_encode($styles),

@@ -6,6 +6,20 @@ window.localStorage||Object.defineProperty(window,'localStorage',new function(){
 
 
 (function($, window, undefined) { // safe scope
+    'use strict';
+
+    var
+        DRAG_HITAREA_CLASS_NAME     = 'drag-hitarea',
+        DRAGGER_CLASS_NAME          = 'dragger',
+        OVERLAY_CLASS_NAME          = 'overlay',
+        DRAGGING_BODY_CLASS         = 'dragging-ace',
+        DRAGGER_HEIGHT              = 6,
+        MIN_ROWS                    = 3,
+        INPUT_FIELD_CLASS           = 'InputfieldAceExtended',
+        ACE_FIELDS_SELECTOR         = '[data-input-class=' + INPUT_FIELD_CLASS + ']',
+        INPUT_FIELD_COLLAPSED_CLASS = 'InputfieldStateCollapsed',
+        INPUT_FIELD_TOGGLE_CLASS    = 'InputfieldHeader'
+    ;
 
     var onfullscreenchange = (function() {
         'use strict';
@@ -55,7 +69,10 @@ window.localStorage||Object.defineProperty(window,'localStorage',new function(){
     $.fn.extend({
         getAce: function() {
             return $(this).data('ace-instance');
-        }
+        },
+        getHelper: function() {
+            return $(this).data('ace-helper');
+        },
     });
 
     var Storage = (function() {
@@ -123,17 +140,9 @@ window.localStorage||Object.defineProperty(window,'localStorage',new function(){
         return Storage;
     })();
 
-    var INPUT_FIELD_CLASS = 'InputfieldAceExtended';
 
-    var DRAG_HITAREA_CLASS_NAME = 'drag-hitarea';
-    var DRAGGER_CLASS_NAME = 'dragger';
-    var OVERLAY_CLASS_NAME = 'overlay';
-    var DRAGGING_BODY_CLASS = 'dragging-ace';
-    var DRAGGER_HEIGHT = 6;
-    var MIN_ROWS = 3;
 
-    var ACE_FIELDS_SELECTOR = '[data-input-class='+INPUT_FIELD_CLASS+']';
-    var FIELD_NAME_DATA_KEY = 'field-name';
+
 
     var snapToGrip = function(value, gridSize) {
         return gridSize * Math.ceil(value / gridSize);
@@ -188,7 +197,23 @@ window.localStorage||Object.defineProperty(window,'localStorage',new function(){
 
                 setOptions: function(options) {
                     editor.setOptions(options);
-                }
+                },
+
+                // set: function(key, value) {
+                //     var ucfKey = this.ucFirst(key),
+                //         method = this['set'+ucfKey];
+
+                //     if (typeof method === 'function') {
+                //         method(value);
+                //     }
+                // },
+
+                // get: function(key, value) {
+                //     var ucfKey = this.ucFirst(key),
+                //         method = this['get'+ucfKey];
+
+                //     return typeof method === 'function' ? method(value) : null;
+                // }
             };
 
             if(!ready) ready = function() {};
@@ -209,19 +234,50 @@ window.localStorage||Object.defineProperty(window,'localStorage',new function(){
         }
     }
 
-    var acefy = function($wrapper, config) {
+    var acefy = function(inputfieldName, config) {
 
+        if (config.initialized) return;
 
-        $wrapper.each(function() {
+        var fieldId = '#' + inputfieldName, // #Inputfield_aceFieldName
+            $textarea = $(fieldId),
+            fieldName = config.fieldName; // aceFieldName
 
-            var $wrapper = $(this);
+        $textarea.each(function() {
+            'use strict';
+
+            var
+                $textarea = $(this),
+
+                // the actual entire field
+                $wrapper = $textarea.closest('.' + INPUT_FIELD_CLASS),
+
+                // the ace field wrapper within
+                $aceField =  $wrapper.find(ACE_FIELDS_SELECTOR),
+
+                // the header that toggles the fields collapse state
+                $toggle = $wrapper.find('>.'+INPUT_FIELD_TOGGLE_CLASS),
+
+                // is it collapsed?
+                isCollapsed = $wrapper.hasClass(INPUT_FIELD_COLLAPSED_CLASS)
+            ;
+
+            // if it is not collapsed go ahead, and initalize the ace editor
+            if (isCollapsed) {
+
+                $wrapper.on('opened', function() {
+                    acefy(inputfieldName, config);
+                });
+
+                return;
+            }
+
 
             var $placeHolder = $wrapper.find('.ace-editor');
 
             var $resize = $wrapper.find('.ace-editor-resize');
 
             var id = $placeHolder.attr('id');
-            var $textarea = $wrapper.find('textarea');
+
             $textarea.hide();
 
             $placeHolder.text($textarea.val());
@@ -296,6 +352,9 @@ window.localStorage||Object.defineProperty(window,'localStorage',new function(){
             var helper = aceHelper.get(editor, $editor, config, storage, function(helper) {
 
                 $textarea.data('ace-instance', editor);
+                $textarea.data('ace-helper', helper);
+
+                config.initialized = true;
 
                 editor.on('change', function() {
                     $textarea.val(editor.getValue());
@@ -324,11 +383,13 @@ window.localStorage||Object.defineProperty(window,'localStorage',new function(){
                     $el.on('change', function() {
                         var val = $(this).val();
                         helper['set'+ucfName](val);
+                        // helper.set(name, val);
                         storage.set(name, val)
                         config[name] = val;
                     });
 
                     helper['set'+ucfName](val);
+                    // helper.sett(name, val);
 
                     // only save the value to storage if there is
                     // an input field in the options menu
@@ -546,76 +607,20 @@ window.localStorage||Object.defineProperty(window,'localStorage',new function(){
         (function(w) {
             'use strict';
 
-            var namespace = 'INPUTFIELD_ACE_EXTENDED';
+            var namespace = 'INPUTFIELD_ACE_EXTENDED',
+                initFields,
+                fields;
 
             if (!w[namespace]) {
                 w[namespace] = { fields: {} };
             }
 
-            var initFields = w[namespace].initFields = function() {
+            fields = w[namespace].fields;
 
-                var fields = w[namespace].fields;
-
-                var INPUT_FIELD_COLLAPSED_CLASS = 'InputfieldStateCollapsed';
-                var INPUT_FIELD_TOGGLE_CLASS = 'InputfieldHeader';
-
+            initFields = w[namespace].initFields = function() {
                 for (var fieldname in fields) {
-
-                    (function(fieldname, field) { // safe scope
-                        'use strict';
-
-                        if (field.initialized) return;
-
-                        var fieldId = '#' + fieldname,
-                            $field = $(fieldId);
-
-                        // the actual entire field
-                        var $fieldWrapper = $field.closest('.' + INPUT_FIELD_CLASS);
-
-                        // the ace field wrapper withing
-                        var $aceField =  $fieldWrapper.find(ACE_FIELDS_SELECTOR);
-
-                        // get the api fieldname
-                        var fieldName = $aceField.data(FIELD_NAME_DATA_KEY);
-
-                        // the header that toggles the fields collapse state
-                        var $toggle = $fieldWrapper.find('>.'+INPUT_FIELD_TOGGLE_CLASS);
-
-                        // is it collapsed?
-                        var isCollapsed = $fieldWrapper.hasClass(INPUT_FIELD_COLLAPSED_CLASS);
-
-                        // not initialized yet
-                        var isInit = false;
-
-                        // if it is not collapsed go ahead, and initalize the ace editor
-                        if (!isCollapsed) {
-                            acefy($aceField, field.options);
-                            isInit = true;
-                            field.initialized = isInit;
-                        }
-
-                        // initalize the edior after the toggle has opened the field
-                        $toggle.on('click', function() {
-                            var $toggle = $(this);
-                            // only init once
-                            if (!isInit && $fieldWrapper.hasClass(INPUT_FIELD_COLLAPSED_CLASS)) {
-                                // hack with timeout to init after the collapse animattion has
-                                // finished, I wish there was a better way
-                                $aceField.css({ opacity: 0, transition: 'opacity 0.3s ease' });
-
-                                setTimeout(function()  {
-                                    $aceField.css({ opacity: 1 });
-                                    acefy($aceField, field.options);
-                                    isInit = true;
-                                    field.initialized = isInit;
-                                }, 333);
-                            }
-                        });
-
-                    })(fieldname, fields[fieldname]);
+                    acefy(fieldname, fields[fieldname].options);
                 }
-
-
             }
 
             initFields();
