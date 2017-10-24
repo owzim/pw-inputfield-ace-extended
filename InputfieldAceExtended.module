@@ -35,7 +35,7 @@
 class InputfieldAceExtended extends InputfieldTextarea
 {
 
-    const VERSION = '1.5.3';
+    const VERSION = '1.5.4';
     const TITLE = 'Ace Extended';
 
     const CLEAR_LOCAL_STORAGE_DATA_KEY = 'clear-local-storage';
@@ -218,7 +218,7 @@ class InputfieldAceExtended extends InputfieldTextarea
     {
         return array(
             'rows'               => 10,
-            'optionsCollapsed'   => Inputfield::collapsedYes,
+            'optionsCollapsed'   => Inputfield::collapsedHidden,
             'theme'              => 'tomorrow',
             'mode'               => 'plain_text',
             'fontSize'           => 14,

@@ -1,5 +1,5 @@
 # Inputfield Ace Extended
-Version `1.5.3`
+Version `1.5.4`
 
 A highly configurable and flexible [Ace editor](https://ace.c9.io/) input field for [ProcessWire](http://processwire.com/) `2.5.5+` and `3.0.0+`
 
