@@ -22,21 +22,24 @@ $ace->mode               = 'json';
 $ace->optionsCollapsed   = Inputfield::collapsedHidden;
 $ace->theme              = 'tomorrow';
 
-$ace->setAdvancedOptions(array(
+$ace->advancedOptions = [
     'highlightActiveLine' => false,
     'showLineNumbers'     => false,
     'showGutter'          => false,
     'tabSize'             => 2,
     'printMarginColumn'   => false,
-));
+];
 
-$ace->setExtensionOptions(array(
+$ace->extensionOptions = [
     'enableEmmet' => true
-));
+];
 ```
 
 ## Changelog
 
+- `1.3.0` Enable setting extensions- and advanced options directly /wo the method
+    * `$ace->setAdvancedOptions($value) => $ace->advancedOptions = $value` 
+    * `$ace->setExtensionOptions($value) => $ace->extensionOptions = $value` 
 - `1.2.0` Enable [ajax mode](https://processwire.com/blog/posts/new-ajax-driven-inputs-conditional-hooks-template-family-settings-and-more/#new-ajax-driven-inputfields-system-wide)
 - `1.1.3` Expose `$textarea.getAce()` to get the editor instance
 - `1.0.0`
