@@ -14,6 +14,22 @@ $gray:  grey;
 
 .InputfieldAceExtended {
 
+    textarea {
+        display: none;
+    }
+
+    .ace-editor-wrapper {
+        opacity: 0;
+    }
+
+    &.ready {
+
+        .ace-editor-wrapper {
+            transition: opacity 0.3s;
+            opacity: 1;
+        }
+    }
+
     .ace-editor-wrapper {
         position: relative;
 

@@ -7,6 +7,16 @@
   transition: opacity 0.3s, background 0.3s;
 }
 
+.InputfieldAceExtended textarea {
+  display: none;
+}
+.InputfieldAceExtended .ace-editor-wrapper {
+  opacity: 0;
+}
+.InputfieldAceExtended.ready .ace-editor-wrapper {
+  transition: opacity 0.3s;
+  opacity: 1;
+}
 .InputfieldAceExtended .ace-editor-wrapper {
   position: relative;
 }

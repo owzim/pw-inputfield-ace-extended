@@ -553,6 +553,8 @@ window.localStorage||Object.defineProperty(window,'localStorage',new function(){
                         });
                     })();
                 })();
+
+                $wrapper.addClass('ready');
             });
 
         });
