@@ -34,7 +34,7 @@
 class InputfieldAceExtended extends InputfieldTextarea
 {
 
-    const VERSION = '1.4.2';
+    const VERSION = '1.5.0';
     const TITLE = 'Ace Extended';
 
     const CLEAR_LOCAL_STORAGE_DATA_KEY = 'clear-local-storage';

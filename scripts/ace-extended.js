@@ -367,6 +367,10 @@ window.localStorage||Object.defineProperty(window,'localStorage',new function(){
                     // else console.log('other change')
                 });
 
+                $textarea.on('change', function() {
+                    editor.setValue($textarea.val());
+                });
+
                 $.each(['advancedOptions','extensionsOptions'], function(index, name) {
                     var additonalOptions = {};
                     try {
