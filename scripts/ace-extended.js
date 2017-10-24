@@ -313,7 +313,7 @@ window.localStorage||Object.defineProperty(window,'localStorage',new function(){
             onfullscreenchange(exitFullScreen);
 
 
-            if (config.fullscreen === 'true') {
+            if (config.fullscreen) {
 
                 $editor.keyup(function (e) {
                     if (e.keyCode === 27) {

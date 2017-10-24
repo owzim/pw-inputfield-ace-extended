@@ -12,7 +12,7 @@
  *
  * This module is sponsored in part by Nibiri, aka forum member Macrura
  *
- * @version 1.3.1
+ * @version 1.4.0
  *
  * @filesource
  *
@@ -264,7 +264,7 @@ class InputfieldAceExtended extends InputfieldTextarea
         return array(
             'title'    => 'Inputfield ' . self::TITLE,
             'summary'  => 'A highly configurable and flexible ACE editor input field.',
-            'version'  => '1.3.1',
+            'version'  => '1.4.0',
             'author'   => 'owzim',
             'icon'     => 'code',
             'href'     => 'https://github.com/owzim/pw-inputfield-ace-extended',
@@ -321,7 +321,7 @@ class InputfieldAceExtended extends InputfieldTextarea
         $this->config->styles->add("{$this->cssUrl}/ace.css");
         $this->config->scripts->add("{$this->aceUrl}/ace.js");
         $this->addExtensionScripts();
-        $this->config->scripts->add("{$this->jsUrl}/ace-extended.js?v=1.3.1");
+        $this->config->scripts->add("{$this->jsUrl}/ace-extended.js?v=1.4.0");
 
         $options = $this->renderOptionsBar();
 
@@ -722,6 +722,14 @@ class InputfieldAceExtended extends InputfieldTextarea
                 'options'        => $this->getAceComponents('mode'),
                 'value'          => $this->fontFamily,
                 'columnWidth'    => 67,
+            ),
+            array(
+                'type'           => 'InputfieldCheckbox',
+                'name'           => 'fullscreen',
+                'label'          => $this->_('Allow Fullscreen'),
+                'notes'          => $this->_('Currently not working properly'),
+                'value'          => (int) $this->fullscreen,
+                'checked'        => empty($this->fullscreen) ? '' : 'checked',
             ),
         );
 

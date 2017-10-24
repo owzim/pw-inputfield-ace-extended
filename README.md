@@ -1,5 +1,5 @@
 # Inputfield Ace Extended
-Version `1.3.1`
+Version `1.4.0`
 
 A highly configurable and flexible [Ace editor](https://ace.c9.io/) input field for [ProcessWire](http://processwire.com/) `2.5.5+` and `3.0.0+`
 
@@ -37,6 +37,7 @@ $ace->extensionOptions = [
 
 ## Changelog
 
+- `1.4.0` Add fullscreen option
 - `1.3.0` Enable setting extensions- and advanced options directly /wo the method
     * `$ace->setAdvancedOptions($value) => $ace->advancedOptions = $value` 
     * `$ace->setExtensionOptions($value) => $ace->extensionOptions = $value` 
