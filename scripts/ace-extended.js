@@ -1,9 +1,8 @@
 // localStorage fallback with cookies
 window.localStorage||Object.defineProperty(window,'localStorage',new function(){var a=[],b={};Object.defineProperty(b,'getItem',{value:function(a){return a?this[a]:null},writable:!1,configurable:!1,enumerable:!1}),Object.defineProperty(b,'key',{value:function(b){return a[b]},writable:!1,configurable:!1,enumerable:!1}),Object.defineProperty(b,'setItem',{value:function(a,b){a&&(document.cookie=escape(a)+'='+escape(b)+'; expires=Tue, 19 Jan 2038 03:14:07 GMT; path=/')},writable:!1,configurable:!1,enumerable:!1}),Object.defineProperty(b,'length',{get:function(){return a.length},configurable:!1,enumerable:!1}),Object.defineProperty(b,'removeItem',{value:function(a){a&&(document.cookie=escape(a)+'=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/')},writable:!1,configurable:!1,enumerable:!1}),this.get=function(){var c;for(var d in b)c=a.indexOf(d),-1===c?b.setItem(d,b[d]):a.splice(c,1),delete b[d];for(a;a.length>0;a.splice(0,1))b.removeItem(a[0]);for(var e,f,g=0,h=document.cookie.split(/\s*;\s*/);g<h.length;g++)e=h[g].split(/\s*=\s*/),e.length>1&&(b[f=unescape(e[0])]=unescape(e[1]),a.push(f));return b},this.configurable=!1,this.enumerable=!0});
 
-
-
-
+/*global jQuery*/
+/*global ace*/
 
 (function($, window, undefined) { // safe scope
     'use strict';
@@ -299,7 +298,7 @@ window.localStorage||Object.defineProperty(window,'localStorage',new function(){
 
                 editor.resize();
 
-            }
+            };
 
             var exitFullScreen = function( event ) {
 
@@ -309,47 +308,50 @@ window.localStorage||Object.defineProperty(window,'localStorage',new function(){
                     $editor.data('fullscreen', false);
                 }
                 resize($editor);
-            }
+            };
 
             onfullscreenchange(exitFullScreen);
 
-            $editor.keyup(function (e) {
-                if (e.keyCode === 27) {
-                    console.log('ESC');
-                    exitFullScreen();
-                }
-            });
+
+            if (config.fullscreen === 'true') {
+
+                $editor.keyup(function (e) {
+                    if (e.keyCode === 27) {
+                        exitFullScreen();
+                    }
+                });
 
 
-            $resize.on('click', function(e) {
-                e.preventDefault();
+                $resize.on('click', function(e) {
+                    e.preventDefault();
 
-                if (!$editor.data('fullscreen')) {
+                    if (!$editor.data('fullscreen')) {
 
-                    var elem = $editor[0];
+                        var elem = $editor[0];
 
-                    var req = elem.requestFullScreen || elem.webkitRequestFullScreen || elem.mozRequestFullScreen;
+                        var req = elem.requestFullScreen || elem.webkitRequestFullScreen || elem.mozRequestFullScreen;
 
-                    req.call(elem);
+                        req.call(elem);
 
-                    $editor.data('fullscreen', true);
-
-
-                } else {
-
-                    $editor.removeAttr('style');
-                    $editor.data('fullscreen', false);
-
-                    exitFullscreen();
-
-                }
-
-                $editor.toggleClass('fullscreen');
-
-                resize($editor);
-            });
+                        $editor.data('fullscreen', true);
 
 
+                    } else {
+
+                        $editor.removeAttr('style');
+                        $editor.data('fullscreen', false);
+
+                        exitFullscreen();
+
+                    }
+
+                    $editor.toggleClass('fullscreen');
+
+                    resize($editor);
+                });
+            } else {
+                $resize.hide();
+            }
 
             var storage = new Storage(id, config, config.enableLocalStorage || false);
             var helper = aceHelper.get(editor, $editor, config, storage, function(helper) {
@@ -361,8 +363,6 @@ window.localStorage||Object.defineProperty(window,'localStorage',new function(){
 
                 editor.on('change', function() {
                     $textarea.val(editor.getValue());
-                    console.log('CHANGE');
-
                     // if (editor.curOp && editor.curOp.command.name) console.log('user change');
                     // else console.log('other change')
                 });
@@ -387,7 +387,7 @@ window.localStorage||Object.defineProperty(window,'localStorage',new function(){
                         var val = $(this).val();
                         helper['set'+ucfName](val);
                         // helper.set(name, val);
-                        storage.set(name, val)
+                        storage.set(name, val);
                         config[name] = val;
                     });
 
@@ -520,7 +520,7 @@ window.localStorage||Object.defineProperty(window,'localStorage',new function(){
                             $overlay.show();
                             lineHeight = helper.getLineHeight();
                         }
-                    }
+                    };
 
                     util.off();
 
@@ -551,7 +551,7 @@ window.localStorage||Object.defineProperty(window,'localStorage',new function(){
                 })();
             });
 
-        })
+        });
     };
 
     $(function() { // dom loaded
@@ -624,7 +624,7 @@ window.localStorage||Object.defineProperty(window,'localStorage',new function(){
                 for (var fieldname in fields) {
                     acefy(fieldname, fields[fieldname].options);
                 }
-            }
+            };
 
             initFields();
 
