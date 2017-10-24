@@ -15,7 +15,13 @@ $gray:  grey;
 .InputfieldAceExtended {
 
     textarea {
-        display: none;
+        // display: none and visibility: hidden would make the ace field read only
+        // so hide it this way
+        height: 0;
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+        border: 0;
     }
 
     .ace-editor-wrapper {

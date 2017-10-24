@@ -8,7 +8,11 @@
 }
 
 .InputfieldAceExtended textarea {
-  display: none;
+  height: 0;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  border: 0;
 }
 .InputfieldAceExtended .ace-editor-wrapper {
   opacity: 0;
