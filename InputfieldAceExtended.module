@@ -12,10 +12,6 @@
  *
  * This module is sponsored in part by Nibiri, aka forum member Macrura
  *
- * @version 1.4.0
- *
- * @filesource
- *
  * @see https://github.com/owzim/pw-inputfield-ace-extended
  * @see http://raunitschka.de
  * @see http://nibiri.com
@@ -38,6 +34,7 @@
 class InputfieldAceExtended extends InputfieldTextarea
 {
 
+    const VERSION = '1.4.2';
     const TITLE = 'Ace Extended';
 
     const CLEAR_LOCAL_STORAGE_DATA_KEY = 'clear-local-storage';
@@ -264,7 +261,7 @@ class InputfieldAceExtended extends InputfieldTextarea
         return array(
             'title'    => 'Inputfield ' . self::TITLE,
             'summary'  => 'A highly configurable and flexible ACE editor input field.',
-            'version'  => '1.4.0',
+            'version'  => self::VERSION,
             'author'   => 'owzim',
             'icon'     => 'code',
             'href'     => 'https://github.com/owzim/pw-inputfield-ace-extended',
@@ -321,7 +318,7 @@ class InputfieldAceExtended extends InputfieldTextarea
         $this->config->styles->add("{$this->cssUrl}/ace.css");
         $this->config->scripts->add("{$this->aceUrl}/ace.js");
         $this->addExtensionScripts();
-        $this->config->scripts->add("{$this->jsUrl}/ace-extended.js?v=1.4.0");
+        $this->config->scripts->add("{$this->jsUrl}/ace-extended.js?v=" . self::VERSION);
 
         $options = $this->renderOptionsBar();
 

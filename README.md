@@ -1,5 +1,5 @@
 # Inputfield Ace Extended
-Version `1.4.0`
+Version `1.4.2`
 
 A highly configurable and flexible [Ace editor](https://ace.c9.io/) input field for [ProcessWire](http://processwire.com/) `2.5.5+` and `3.0.0+`
 
@@ -59,5 +59,6 @@ $ace->extensionOptions = [
 
 ## Roadmap
 
-* Add full screen mode
-* Expose a jQuery API for resizing, setting row count etc.
+* Refactor js
+* Make fullscreen feature more stable
+* Remove custom resizer in favor of built-in *grow-by-hitting-enter* functionality
