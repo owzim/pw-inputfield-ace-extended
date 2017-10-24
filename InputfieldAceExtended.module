@@ -17,24 +17,25 @@
  * @see http://nibiri.com
  * @see http://www.processwire.com
  *
- * @property int    $optionsCollapsed   The collapsed state of the options menu
- * @property string $theme              The lowercase theme name
- * @property string $mode               The lowercase mode name
- * @property int    $fontSize           The font size of the editor
- * @property string $keybinding         ace|vim|emacs
- * @property string $fontFamily         CSS `font-family` property
- * @property bool   $enableLocalStorage If settings from the options menu and row count should be saved in localStorage
- * @property string $advancedOptions    A JSON string of advanced options passed as Javscript object to the editor
- * @property string $extensionsOptions  A JSON string of extensions options passed as Javscript object to the editor
- * @property array  $themes             Array of lowercase theme names, that should be selectable from the options menu
- * @property array  $modes              Array of lowercase mode names, that should be selectable from the options menu
- * @property array  $keybindings
+ * @property int     $optionsCollapsed   The collapsed state of the options menu
+ * @property string  $theme              The lowercase theme name
+ * @property string  $mode               The lowercase mode name
+ * @property int     $fontSize           The font size of the editor
+ * @property string  $keybinding         ace|vim|emacs
+ * @property string  $fontFamily         CSS `font-family` property
+ * @property boolean $fullscreen         Whether fullscreen button should be available
+ * @property bool    $enableLocalStorage If settings from the options menu and row count should be saved in localStorage
+ * @property string  $advancedOptions    A JSON string of advanced options passed as Javscript object to the editor
+ * @property string  $extensionsOptions  A JSON string of extensions options passed as Javscript object to the editor
+ * @property array   $themes             Array of lowercase theme names, that should be selectable from the options menu
+ * @property array   $modes              Array of lowercase mode names, that should be selectable from the options menu
+ * @property array   $keybindings
  */
 
 class InputfieldAceExtended extends InputfieldTextarea
 {
 
-    const VERSION = '1.5.0';
+    const VERSION = '1.5.1';
     const TITLE = 'Ace Extended';
 
     const CLEAR_LOCAL_STORAGE_DATA_KEY = 'clear-local-storage';
