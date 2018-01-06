@@ -353,6 +353,9 @@ window.localStorage||Object.defineProperty(window,"localStorage",new function(){
                 })();
             })();
         });
+        
+        // trigger loaded event when done
+        $textarea.trigger('loaded');
     };
 
     $(function() { // dom loaded
